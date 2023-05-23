@@ -24,64 +24,53 @@ void comment(void);
 %%
     /* match two types of comments */
 "/*"            { comment();               }
-"//"[^\n]*      { /* consume //-comment */ }
 
-    /* match all the necessary keywords */
-"break"         { count(); return TOKEN(BREAK);    }
-"else"          { count(); return TOKEN(ELSE);     }
-"if"            { count(); return TOKEN(IF);       }
-"return"        { count(); return TOKEN(RETURN);   }
-"while"         { count(); return TOKEN(WHILE);    }
-"for"         { count(); return TOKEN(for);    }
-
-    /* identifiers */
-{L}({L}|{D})*            { count(); SAVE_TOKEN; return IDENTIFIER;}
-
-    /* constants */
-0[xX]{H}+                { count(); SAVE_TOKEN; return CONSTANT_INT; /* hexadecimal */ }
-0[0-7]*                  { count(); SAVE_TOKEN; return CONSTANT_INT; /* octal */       }
-[1-9]{D}*                { count(); SAVE_TOKEN; return CONSTANT_INT; /* decimal */     }
-
-\'.\'|\'\\.\'            { count(); SAVE_TOKEN; return CONSTANT_CHAR; /* character */  }
-\"(\\.|[^"\\])*\"      { count(); SAVE_TOKEN; return CONSTANT_STRING; /* string */    }
-
-
-{D}+{E}                  { count(); SAVE_TOKEN; return CONSTANT_FLOAT; }
-{D}*"."{D}+{E}?          { count(); SAVE_TOKEN; return CONSTANT_FLOAT; }
-{D}+"."{D}*{E}?          { count(); SAVE_TOKEN; return CONSTANT_FLOAT; }
-
-
-    /* operators */
-"&&"            { count(); return TOKEN(AND); }
-"||"            { count(); return TOKEN(OR); }
-"<="            { count(); return TOKEN(LEQ); }
-">="            { count(); return TOKEN(GEQ); }
-"=="            { count(); return TOKEN(EQU); }
-"!="            { count(); return TOKEN(NEQ); }
-";"             { count(); return TOKEN(';'); }
-"{"             { count(); return TOKEN('{'); }
-"}"             { count(); return TOKEN('}'); }
-","             { count(); return TOKEN(','); }
-":"             { count(); return TOKEN(':'); }
-"="             { count(); return TOKEN('='); }
-"("             { count(); return TOKEN('('); }
-")"             { count(); return TOKEN(')'); }
-"["             { count(); return TOKEN('['); }
-"]"             { count(); return TOKEN(']'); }
-"."             { count(); return TOKEN('.'); }
-"&"             { count(); return TOKEN(GAD); }
-"!"             { count(); return TOKEN(NOT); }
-"~"             { count(); return TOKEN('~'); }
-"-"             { count(); return TOKEN(MINUS); }
-"+"             { count(); return TOKEN(PLUS); }
-"*"             { count(); return TOKEN(MUL); }
-"/"             { count(); return TOKEN(DIV); }
-"%"             { count(); return TOKEN('%'); }
-"<"             { count(); return TOKEN(LESST); }
-">"             { count(); return TOKEN(GREATERT); }
-"^"             { count(); return TOKEN('^'); }
-"|"             { count(); return TOKEN('|'); }
-"?"             { count(); return TOKEN('?'); }
+"if"                    count();puts("TIF"); return TOKEN(TIF);
+"else"                  count();puts("TELSE"); return TOKEN(TELSE);
+"return"                count();puts("TRETURN"); return TOKEN(TRETURN);
+"for"                   count();puts("TFOR"); return TOKEN(TFOR);
+"while"                 count();puts("TWHILE"); return TOKEN(TWHILE);
+"struct"                count();puts("TSTRUCT"); return TOKEN(TSTRUCT);
+"int"                   count();SAVE_TOKEN; puts("TYINT");  return TYINT;
+"double"                count();SAVE_TOKEN; puts("TYDOUBLE"); return TYDOUBLE;
+"float"                 count();SAVE_TOKEN; puts("TYFLOAT"); return TYFLOAT;
+"char"                  count();SAVE_TOKEN; puts("TYCHAR"); return TYCHAR;
+"bool"                  count();SAVE_TOKEN; puts("TYBOOL"); return TYBOOL;
+"string"                count();SAVE_TOKEN; puts("TYSTRING"); return TYSTRING;
+"void"                  count();SAVE_TOKEN; puts("TYVOID"); return TYVOID;
+"extern"                count();SAVE_TOKEN; puts("TEXTERN"); return TEXTERN;
+[a-zA-Z_][a-zA-Z0-9_]*	count();SAVE_TOKEN; puts("TIDENTIFIER"); return TIDENTIFIER;
+[0-9]+\.[0-9]*			count();SAVE_TOKEN; puts("TDOUBLE"); return TDOUBLE;
+[0-9]+  				count();SAVE_TOKEN; puts("TINTEGER"); return TINTEGER;
+\'.\'|\'\\.\'           count();SAVE_TOKEN; puts("TCHAR")； return TCHAR;
+\"(\\.|[^"])*\"         count();SAVE_TOKEN; puts("TSTRING"); return TSTRING;
+"="						count();puts("TEQUAL"); return TOKEN(TEQUAL);
+"=="					count();puts("TCEQ"); return TOKEN(TCEQ);
+"!="                    count();puts("TCNE"); return TOKEN(TCNE);
+"<"                     count();puts("TCLT"); return TOKEN(TCLT);
+"<="                    count();puts("TCLE"); return TOKEN(TCLE);
+">"                     count();puts("TCGT"); return TOKEN(TCGT);
+">="                    count();puts("TCGE"); return TOKEN(TCGE);
+"("                     count();puts("TLPAREN"); return TOKEN(TLPAREN);
+")"                     count();puts("TRPAREN"); return TOKEN(TRPAREN);
+"{"                     count();puts("TLBRACE"); return TOKEN(TLBRACE);
+"}"                     count();puts("TRBRACE"); return TOKEN(TRBRACE);
+"["                     count();puts("TLBRACKET"); return TOKEN(TLBRACKET);
+"]"                     count();puts("TRBRACKET"); return TOKEN(TRBRACKET);
+"."                     count();puts("TDOT"); return TOKEN(TDOT);
+","                     count();puts("TCOMMA"); return TOKEN(TCOMMA);
+"+"                     count();puts("TPLUS"); return TOKEN(TPLUS);
+"-"                     count();puts("TMINUS"); return TOKEN(TMINUS);
+"*"                     count();puts("TMUL"); return TOKEN(TMUL);
+"/"                     count();puts("TDIV"); return TOKEN(TDIV);
+"&"                     count();puts("TAND"); return TOKEN(TAND);
+"|"                     count();puts("TOR"); return TOKEN(TOR);
+"^"                     count();puts("TXOR"); return TOKEN(TXOR);
+"%"                     count();puts("TMOD"); return TOKEN(TMOD);
+">>"                    count();puts("TSHIFTR"); return TOKEN(TSHIFTR);
+"<<"                    count();puts("TSHIFTL"); return TOKEN(TSHIFTL);
+";"                     count();puts("TSEMICOLON"); return TOKEN(TSEMICOLON);
+.						count();printf("Unknown token:%s\n", yytext); yyterminate();
 
 [ \t\v\n\f]     { count(); }
 .               { printf("unknown token : %s in line: %d\n", yytext, yylineno); }

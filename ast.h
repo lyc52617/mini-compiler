@@ -47,16 +47,16 @@ public:
     NFloat(float value) : value(value) { }
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
-class NString : public NString {
+class NString : public NExpression {
 public:
     string value;
-    NString(string value) : value(value) { }
+    NString(string value) : value(value){}
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
-class NChar : public NChar {
+class NChar : public NExpression {
 public:
     char value;
-    NChar(char value) : value(value) { }
+    NChar(char value) : value(value){}
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 class NIdentifier : public NExpression {
@@ -118,8 +118,8 @@ public:
 };
 class NBlock : public NExpression {
 public:
-    StatementList statements;
-    NBlock() { }
+    shared_ptr<StatementList> statements;
+    NBlock(shared_ptr<StatementList> statements):statements(statements) { }
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 
@@ -227,8 +227,16 @@ class Nstructmember: public NExpression{
 public:
     shared_ptr<NIdentifier> structname;
     shared_ptr<NIdentifier> member;
-    NStructmember(shared_ptr<NIdentifier> structname,shared_ptr<NIdentifier> member):structname(structname),member(member){}
+    Nstructmember(shared_ptr<NIdentifier> structname,shared_ptr<NIdentifier> member):structname(structname),member(member){}
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 
-class 
+class Nstructassign:public NExpression{
+public:
+    shared_ptr<NIdentifier> structname;
+    shared_ptr<NIdentifier> member;
+    shared_ptr<NExpression> assign;
+    Nstructassign(shared_ptr<NIdentifier> structname,shared_ptr<NIdentifier> member,shared_ptr<NExpression> assign):
+    structname(structname),member(member),assign(assign){}
+    virtual llvm::Value* codeGen(CodeGenContext& context);
+};
