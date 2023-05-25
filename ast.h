@@ -68,24 +68,26 @@ public:
 class NChar : public NExpression {
 public:
     char value;
-    NChar(char* value) : value(value[0]){}
+    NChar(string value) : value(value[0]){}
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 class NIdentifier : public NExpression {
 public:
     std::string name;
-    bool type=false;
+    std::string type;
     bool isarray = false;
     shared_ptr<ExpressionList> arraySize = make_shared<ExpressionList>();
-    NIdentifier(const std::string& name) : name(name) { }
+    NIdentifier(){}
+    NIdentifier(const std::string &name) : name(name) { }
+    NIdentifier(const std::string &name,std::string type) : name(name),type(type) { }
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 
 class NFunctionCall : public NExpression {
 public:
     const shared_ptr<NIdentifier> id;
-    ExpressionList arguments;
-    NFunctionCall(const shared_ptr<NIdentifier> id, ExpressionList& arguments) :
+    shared_ptr<ExpressionList> arguments=make_shared<ExpressionList>();
+    NFunctionCall(const shared_ptr<NIdentifier> id, shared_ptr<ExpressionList> arguments) :
         id(id), arguments(arguments) { }
     NFunctionCall(const shared_ptr<NIdentifier> id) : id(id) { }
     virtual llvm::Value* codeGen(CodeGenContext& context);
@@ -114,9 +116,11 @@ public:
 class Narrayelement : public NExpression{
 public:
     shared_ptr<NExpression> arrayname;
-    shared_ptr<NExpression> arrayindex;
-    Narrayelement(shared_ptr<NExpression> arrayname,shared_ptr<NExpression> arrayindex):
-    arrayname(arrayname),arrayindex(arrayindex){}
+    shared_ptr<ExpressionList> expressions = make_shared<ExpressionList>();
+    Narrayelement(shared_ptr<NExpression> arrayname,shared_ptr<ExpressionList> expressions):
+    arrayname(arrayname),expressions(expressions){}
+    Narrayelement(shared_ptr<NExpression> arrayname,shared_ptr<NExpression> expression):
+    arrayname(arrayname){expressions->push_back(expression);}
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 class Narrayelementassign : public NExpression{
@@ -154,7 +158,6 @@ public:
 	NVariableDeclaration(const shared_ptr<NIdentifier> type, shared_ptr<NIdentifier> id, shared_ptr<NExpression> assignmentExpr = NULL)
 		: type(type), id(id), assignmentExpr(assignmentExpr) {
             cout << "isArray = " << type->isarray << endl;
-            assert(type->type);
             assert(!type->isarray || (type->isarray && type->arraySize != nullptr));
 	}
     virtual llvm::Value* codeGen(CodeGenContext& context);
@@ -235,11 +238,11 @@ public:
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 
-class Nstructmember: public NExpression{
+class NStructmember: public NExpression{
 public:
     shared_ptr<NIdentifier> structname;
     shared_ptr<NIdentifier> member;
-    Nstructmember(shared_ptr<NIdentifier> structname,shared_ptr<NIdentifier> member):structname(structname),member(member){}
+    NStructmember(shared_ptr<NIdentifier> structname,shared_ptr<NIdentifier> member):structname(structname),member(member){}
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 
@@ -250,5 +253,10 @@ public:
     shared_ptr<NExpression> assign;
     Nstructassign(shared_ptr<NIdentifier> structname,shared_ptr<NIdentifier> member,shared_ptr<NExpression> assign):
     structname(structname),member(member),assign(assign){}
+    virtual llvm::Value* codeGen(CodeGenContext& context);
+};
+
+class Nbreakstatement: public NStatement{
+    Nbreakstatement(){}
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };

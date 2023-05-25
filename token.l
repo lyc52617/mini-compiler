@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include<vector>
+#include <memory>
 #include "treenode.h"
 #include "parsing.hpp"
 
@@ -25,6 +26,7 @@ void count(void);
 "if"                    count();puts("TIF"); return TOKEN(TIF);
 "else"                  count();puts("TELSE"); return TOKEN(TELSE);
 "return"                count();puts("TRETURN"); return TOKEN(TRETURN);
+"break"                count();puts("TBREAK"); return TOKEN(TBREAK);
 "for"                   count();puts("TFOR"); return TOKEN(TFOR);
 "while"                 count();puts("TWHILE"); return TOKEN(TWHILE);
 "struct"                count();puts("TSTRUCT"); return TOKEN(TSTRUCT);
