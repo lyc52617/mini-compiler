@@ -44,7 +44,7 @@ public:
 class NFloat : public NExpression {
 public:
     float value;
-    NFloat(float value) : value(value) { }
+    NFloat(double value) : value(value) { }
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 class NString : public NExpression {
@@ -53,10 +53,22 @@ public:
     NString(string value) : value(value){}
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
+class NDouble : public NExpression {
+public:
+    double value;
+    NDouble(double value) : value(value){}
+    virtual llvm::Value* codeGen(CodeGenContext& context);
+};
+class NBool : public NExpression {
+public:
+    bool value;
+    NBool(string value) : value(value == "true"){}
+    virtual llvm::Value* codeGen(CodeGenContext& context);
+};
 class NChar : public NExpression {
 public:
     char value;
-    NChar(char value) : value(value){}
+    NChar(char* value) : value(value[0]){}
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 class NIdentifier : public NExpression {

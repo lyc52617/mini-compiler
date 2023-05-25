@@ -1,29 +1,26 @@
-D            [0-9]
-L            [a-zA-Z_]
-H            [a-fA-F0-9]
-E            ([Ee][+-]?{D}+)
 
 %{
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include<vector>
 #include "treenode.h"
 #include "parsing.hpp"
 
 #define SAVE_TOKEN yylval.string = new std::string(yytext, yyleng)
 #define TOKEN(t) (yylval.token = t)
 
-int column = 0;
+int countline=0,countchar=0;
 
 void count(void);
-void comment(void);
 %}
 
-%option yylineno
+%option noyywrap
 
 %%
     /* match two types of comments */
-"/*"            { comment();               }
+"/*"[^*]*[*]+([^*/][^*]*[*]+)*"/"						{ puts("COMMENT"); }
+"//".*													{ puts("COMMENT"); }
 
 "if"                    count();puts("TIF"); return TOKEN(TIF);
 "else"                  count();puts("TELSE"); return TOKEN(TELSE);
@@ -41,9 +38,12 @@ void comment(void);
 "extern"                count();SAVE_TOKEN; puts("TEXTERN"); return TEXTERN;
 [a-zA-Z_][a-zA-Z0-9_]*	count();SAVE_TOKEN; puts("TIDENTIFIER"); return TIDENTIFIER;
 [0-9]+\.[0-9]*			count();SAVE_TOKEN; puts("TDOUBLE"); return TDOUBLE;
+[0-9]+\.[0-9]*			count();SAVE_TOKEN; puts("FLOAT"); return TFLOAT;
 [0-9]+  				count();SAVE_TOKEN; puts("TINTEGER"); return TINTEGER;
-\'.\'|\'\\.\'           count();SAVE_TOKEN; puts("TCHAR")； return TCHAR;
-\"(\\.|[^"])*\"         count();SAVE_TOKEN; puts("TSTRING"); return TSTRING;
+"true|false"            count();SAVE_TOKEN; puts("TBOOL"); return TBOOL;
+\'.\'                   count();SAVE_TOKEN; puts("TCHAR")； return TCHAR;
+|\'\\.\'                count();yylval.string = esacpe(yytext+1,yyleng-2); puts("TCHAR")； return TCHAR;
+\"(\\.|[^"])*\"         count();yylval.string = esacpe(yytext+1,yyleng-2); puts("TSTRING"); return TSTRING;
 "="						count();puts("TEQUAL"); return TOKEN(TEQUAL);
 "=="					count();puts("TCEQ"); return TOKEN(TCEQ);
 "!="                    count();puts("TCNE"); return TOKEN(TCNE);
@@ -72,42 +72,56 @@ void comment(void);
 ";"                     count();puts("TSEMICOLON"); return TOKEN(TSEMICOLON);
 .						count();printf("Unknown token:%s\n", yytext); yyterminate();
 
-[ \t\v\n\f]     { count(); }
-.               { printf("unknown token : %s in line: %d\n", yytext, yylineno); }
+[ \t\v\n\f\r]             { count(); }
+.                       printf("Unknown token:%s\n", yytext); yyterminate();
 
 %%
 
-int yywrap(void)
-{
-    return 1;
-}
 
-
-void comment(void)
-{
-    column = 0;
-    char c, prev = 0;
-    
-    while (std::cin >> c)      /* (EOF maps to 0) */
-    {
-        if (c == '/' && prev == '*')
-            return;
-        prev = c;
-    }
-    printf("unterminated comment");
-}
 
 void count(void)
 {
-    int i;
-
-    for (i = 0; yytext[i] != '\0'; i++)
-        if (yytext[i] == '\n')
-            column = 0;
-        else if (yytext[i] == '\t')
-            column += 4 - (column % 4);
+    for(auto ch: std::string(yytext, yyleng)) 
+    {
+        if(ch == '\n')
+        {
+            countchar=0;
+            countline++;
+        }
+        else if(ch=='r')
+        {
+            countchar=0;
+        }
         else
-            column++;
+        countchar++;
+    }
+}
 
-    
+std::string *escape(char ch[], int length)
+{
+    std::vector<char> cVec;
+    int i;
+    char prev = '\0';
+    for (i = 0; i < length; i++) {
+        if (prev != '\\') {
+            if (ch[i] != '\\') {
+                cVec.push_back(ch[i]);
+            } else {
+                prev = '\\';
+            }
+        } else {
+            switch (ch[i])
+            {
+            case 'n': cVec.push_back('\n'); prev = '\0'; break;
+            case 't': cVec.push_back('\t'); prev = '\0'; break;
+            case 'b': cVec.push_back('\b'); prev = '\0'; break;
+            case '\'': cVec.push_back('\''); prev = '\0'; break;
+            case '\"': cVec.push_back('\"'); prev = '\0'; break;
+            case '0': cVec.push_back('\0'); prev = '\0'; break;
+            case '\\': cVec.push_back('\\'); prev = '\0'; break;
+            default: prev = '\0'; break;
+            }
+        }
+    }
+    return new std::string(cVec.begin(), cVec.end());
 }
