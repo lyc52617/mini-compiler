@@ -5,14 +5,14 @@
 #include <string>
 #include<vector>
 #include <memory>
-#include "treenode.h"
-#include "parsing.hpp"
+#include "ast.h"
+#include "parser.hpp"
 
 #define SAVE_TOKEN yylval.string = new std::string(yytext, yyleng)
 #define TOKEN(t) (yylval.token = t)
 
 int countline=0,countchar=0;
-
+std::string *escape(char ch[], int length);
 void count(void);
 %}
 
@@ -39,13 +39,13 @@ void count(void);
 "void"                  count();SAVE_TOKEN; puts("TYVOID"); return TYVOID;
 "extern"                count();SAVE_TOKEN; puts("TEXTERN"); return TEXTERN;
 [a-zA-Z_][a-zA-Z0-9_]*	count();SAVE_TOKEN; puts("TIDENTIFIER"); return TIDENTIFIER;
+[0-9]+  				count();SAVE_TOKEN; puts("TINTEGER"); return TINTEGER;
 [0-9]+\.[0-9]*			count();SAVE_TOKEN; puts("TDOUBLE"); return TDOUBLE;
 [0-9]+\.[0-9]*			count();SAVE_TOKEN; puts("FLOAT"); return TFLOAT;
-[0-9]+  				count();SAVE_TOKEN; puts("TINTEGER"); return TINTEGER;
 "true|false"            count();SAVE_TOKEN; puts("TBOOL"); return TBOOL;
-\'.\'                   count();SAVE_TOKEN; puts("TCHAR")； return TCHAR;
-|\'\\.\'                count();yylval.string = esacpe(yytext+1,yyleng-2); puts("TCHAR")； return TCHAR;
-\"(\\.|[^"])*\"         count();yylval.string = esacpe(yytext+1,yyleng-2); puts("TSTRING"); return TSTRING;
+\'.\'                   count();SAVE_TOKEN; puts("TCHAR"); return TCHAR;
+\'\\.\'                 count();yylval.string = escape(yytext+1,yyleng-2); puts("TCHAR"); return TCHAR;
+\".*\"                  count();yylval.string = escape(yytext+1,yyleng-2); puts("TSTRING"); return TSTRING;
 "="						count();puts("TEQUAL"); return TOKEN(TEQUAL);
 "=="					count();puts("TCEQ"); return TOKEN(TCEQ);
 "!="                    count();puts("TCNE"); return TOKEN(TCNE);
@@ -65,9 +65,8 @@ void count(void);
 "-"                     count();puts("TMINUS"); return TOKEN(TMINUS);
 "*"                     count();puts("TMUL"); return TOKEN(TMUL);
 "/"                     count();puts("TDIV"); return TOKEN(TDIV);
-"&"                     count();puts("TAND"); return TOKEN(TAND);
-"|"                     count();puts("TOR"); return TOKEN(TOR);
-"^"                     count();puts("TXOR"); return TOKEN(TXOR);
+"&&"                     count();puts("TAND"); return TOKEN(TAND);
+"||"                     count();puts("TOR"); return TOKEN(TOR);
 "%"                     count();puts("TMOD"); return TOKEN(TMOD);
 ">>"                    count();puts("TSHIFTR"); return TOKEN(TSHIFTR);
 "<<"                    count();puts("TSHIFTL"); return TOKEN(TSHIFTL);
@@ -75,7 +74,6 @@ void count(void);
 .						count();printf("Unknown token:%s\n", yytext); yyterminate();
 
 [ \t\v\n\f\r]             { count(); }
-.                       printf("Unknown token:%s\n", yytext); yyterminate();
 
 %%
 
