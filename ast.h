@@ -71,6 +71,12 @@ public:
     NChar(string value) : value(value[0]){}
     virtual llvm::Value* codeGen(CodeGenContext& context);
 };
+class NVoid : public NExpression {
+public:
+    NVoid() = default;
+
+    llvm::Value *codeGen(CodeGenContext &context) ;
+};
 class NIdentifier : public NExpression {
 public:
     std::string name;

@@ -38,7 +38,7 @@
 %type <index> array_index
 %type <ident> ident primary_typename array_typename struct_typename typename
 %type <expr> literal expr assign 
-%type <varvec> func_decl_args struct_members
+%type <varvec> func_decl_args struct_member
 %type <exprvec> call_args
 %type <block> program stmts block
 %type <stmt> stmt var_decl func_decl struct_decl if_stmt for_stmt while_stmt
@@ -78,17 +78,19 @@ func_decl : typename ident TLPAREN func_decl_args TRPAREN block
 				{ $$ = new NFunctionDeclaration(shared_ptr<NIdentifier>($1), shared_ptr<NIdentifier>($2), shared_ptr<VariableList>($4), shared_ptr<NBlock>($6));  }
 			| TEXTERN typename ident TLPAREN func_decl_args TRPAREN { $$ = new NFunctionDeclaration(shared_ptr<NIdentifier>($2), shared_ptr<NIdentifier>($3), shared_ptr<VariableList>($5), nullptr, true); }
 			;
+struct_decl: 
+
 typename : primary_typename { $$ = $1; }
 			| array_typename { $$ = $1; }
 			| struct_typename { $$ = $1; }
 			;
-primary_typename : TYINT { $$ = new NIdentifier(*$1); $$->type = true;  delete $1; }
-					| TYDOUBLE { $$ = new NIdentifier(*$1); $$->type = true; delete $1; }
-					| TYFLOAT { $$ = new NIdentifier(*$1); $$->type = true; delete $1; }
-					| TYCHAR { $$ = new NIdentifier(*$1); $$->type = true; delete $1; }
-					| TYBOOL { $$ = new NIdentifier(*$1); $$->type = true; delete $1; }
-					| TYVOID { $$ = new NIdentifier(*$1); $$->type = true; delete $1; }
-					| TYSTRING { $$ = new NIdentifier(*$1); $$->type = true; delete $1; }
+primary_typename : TYINT { $$ = new NIdentifier(*$1,"int");delete $1; }
+					| TYDOUBLE { $$ = new NIdentifier(*$1,"double"); $$->type = true; delete $1; }
+					| TYFLOAT { $$ = new NIdentifier(*$1,"float"); $$->type = true; delete $1; }
+					| TYCHAR { $$ = new NIdentifier(*$1,"char"); $$->type = true; delete $1; }
+					| TYBOOL { $$ = new NIdentifier(*$1,"bool"); $$->type = true; delete $1; }
+					| TYVOID { $$ = new NIdentifier(*$1,"void"); $$->type = true; delete $1; }
+					| TYSTRING { $$ = new NIdentifier(*$1,"string"); $$->type = true; delete $1; }
 					;
 array_typename : primary_typename TLBRACKET TINTEGER TRBRACKET { 
 					$1->isArray = true; 
@@ -99,6 +101,16 @@ array_typename : primary_typename TLBRACKET TINTEGER TRBRACKET {
 					$1->arraySize->push_back(make_shared<NInteger>(atol($3->c_str())));
 					$$ = $1;
 				}
+
+assign : ident TEQUAL expr { $$ = new NAssignment(shared_ptr<NIdentifier>($1), shared_ptr<NExpression>($3)); }
+			| array_index TEQUAL expr {
+				$$ = new Narrayelementassign(shared_ptr<Narrayelement>($1), shared_ptr<NExpression>($3));
+			}
+			| ident TDOT ident TEQUAL expr {
+				auto member = make_shared<NStructmember>(shared_ptr<NIdentifier>($1), shared_ptr<NIdentifier>($3)); 
+				$$ = new NStructAssignment(member, shared_ptr<NExpression>($5)); 
+			}
+			;
 
 func_decl_args : /* blank */ { $$ = new VariableList(); }
 							 | var_decl { $$ = new VariableList(); $$->push_back(shared_ptr<NVariableDeclaration>($<var_decl>1)); }
@@ -162,13 +174,18 @@ while_stmt: TWHILE TLPAREN expr TRPAREN block{
 		$$ = new Nwhile(shared_ptr<NBlock>($5),shared_ptr<NExpression>($3))};
 		
 
-for_stmt:
+for_stmt:TFOR TLPAREN expr TSEMICOLON expr TSEMICOLON expr TRPAREN block { $$ = new Nforloop( shared_ptr<NExpression>($3), shared_ptr<NExpression>($5), shared_ptr<NExpression>($7),shared_ptr<NBlock>($9)); }
 
 struct_typename: TSTRUCT ident {
 				$2->type = "struct";
 				$$ = $2;
 			}
+struct_decl : TSTRUCT ident TLBRACE struct_members TRBRACE {$$ = new NStructDeclaration(shared_ptr<NIdentifier>($2), shared_ptr<VariableList>($4)); }
 
+struct_member : { $$ = new VariableList(); }
+				| var_decl { $$ = new VariableList(); $$->push_back(shared_ptr<NVariableDeclaration>($<var_decl>1)); }
+				| struct_members var_decl { $1->push_back(shared_ptr<NVariableDeclaration>($<var_decl>2)); }
+				;
 %%
 
 
