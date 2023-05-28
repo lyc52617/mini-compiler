@@ -162,16 +162,9 @@ void CodeGenContext::generateCode(NBlock &root, const std::string &file) {
     builder.CreateRet(llvm::ConstantInt::get(typeOf("int"), 0, true));
     pop();
 
-    /* Print the bytecode in a human-readable format to see if our program compiled properly */
-//    llvm::legacy::PassManager pm;
-//    pm.add(llvm::createPrintModulePass(llvm::outs()));
-//    pm.run(*module);
-//
+
     std::error_code errInfo;
-//    llvm::raw_ostream *out = new llvm::raw_fd_ostream(file, errInfo);
-//    llvm::WriteBitcodeToFile(*module, *out);
-//    out->flush();
-//    delete out;
+
 
     llvm::raw_fd_ostream out(file, errInfo);
     module->print(out, nullptr);
@@ -322,4 +315,42 @@ llvm::Value *NBinaryOperator::codeGen(CodeGenContext &context) {
     }
 }
 
+llvm::Value* NIdentifier::codeGen(CodeGenContext& context)
+{
+    ;
+}
 
+llvm::Value* NFunctionCall::codeGen(CodeGenContext& context)
+{
+    ;
+}
+
+llvm::Value* NUnaryOperator::codeGen(CodeGenContext& context)
+{
+    ;
+}
+llvm::Value* NAssignment::codeGen(CodeGenContext& context)
+{
+    ;
+}
+llvm::Value* NArrayIndex::codeGen(CodeGenContext& context)
+{
+    ;
+}
+llvm::Value* NArrayIndexassign::codeGen(CodeGenContext& context)
+{
+    ;
+}
+llvm::Value* NExpressionStatement::codeGen(CodeGenContext& context)
+{
+    ;
+}
+llvm::Value* NUnaryOperator::codeGen(CodeGenContext& context)
+{
+    ;
+}
+llvm::Value* NUnaryOperator::codeGen(CodeGenContext& context)
+{
+    ;
+}
+#endif
