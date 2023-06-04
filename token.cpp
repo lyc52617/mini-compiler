@@ -1,6 +1,6 @@
-#line 2 "token.cpp"
+#line 2 "/home/liu/compiler/token.cpp"
 
-#line 4 "token.cpp"
+#line 4 "/home/liu/compiler/token.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -355,8 +355,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 54
-#define YY_END_OF_BUFFER 55
+#define YY_NUM_RULES 63
+#define YY_END_OF_BUFFER 64
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -364,41 +364,44 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static const flex_int16_t yy_accept[132] =
+static const flex_int16_t yy_accept[164] =
     {   0,
-        0,    0,   55,   52,   52,   53,   52,   52,   48,   45,
-       52,   33,   34,   43,   41,   40,   42,   39,   44,   19,
-       51,   29,   26,   31,   18,   37,   38,   47,   18,   18,
-       18,   18,   18,   18,   18,   18,   18,   18,   18,   35,
-       46,   36,   28,    0,   25,    0,    0,    0,    2,   20,
-       19,   50,   30,   27,   32,   49,   18,   18,   18,   18,
-       18,   18,   18,   18,   18,    3,   18,   18,   18,   18,
-       18,   18,   23,    0,   23,    0,    0,    2,   20,   18,
-       18,   18,   18,   18,   18,   18,    7,   10,   18,   18,
-       18,   18,   18,   24,    0,    1,   14,   18,   13,   18,
+        0,    0,   64,   62,    1,    2,   62,   35,   62,   26,
+       62,   62,    5,    6,   24,   15,   14,   16,   11,   25,
+       19,   19,   12,   13,   32,   37,   30,   61,    7,    8,
+       27,   61,   61,   61,   61,   61,   61,   61,   61,   61,
+       61,   61,   61,    9,   62,   10,    2,   34,    0,   23,
+       28,    0,    0,    3,    4,    0,   17,    0,    0,   19,
+       33,   36,   31,   61,   61,   61,   61,   61,   61,   61,
+       42,   61,   61,   61,   61,   61,   38,   61,   61,   61,
+       61,   61,   61,   61,   61,   61,   29,   22,    0,   22,
+        0,    0,   17,   21,   61,   61,   61,   61,   61,   61,
 
-        4,   18,   18,   18,   18,   18,   18,   16,   18,    0,
-        0,    6,   18,   18,   12,   18,   18,   18,    0,    8,
-       11,   17,    5,   15,    9,    0,    0,    0,    0,   22,
-        0
+       61,   61,   61,   61,   61,   41,   49,   58,   61,   61,
+       61,   61,   61,   61,   61,    0,   17,   21,   20,   53,
+       61,   46,   50,   61,   61,   61,   61,   39,   56,   61,
+       61,   61,   61,   61,   61,   59,   18,   55,   61,    0,
+        0,   43,   54,   61,   61,   61,   52,   61,   61,   61,
+       61,   40,   61,   61,   51,   48,   57,   60,   45,   61,
+       47,   44,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
-        2,    2,    2,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    4,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    2,    4,    5,    1,    1,    6,    7,    8,    9,
-       10,   11,   12,   13,   14,   15,   16,   17,   17,   17,
-       17,   17,   17,   17,   17,   17,   17,    1,   18,   19,
-       20,   21,    1,    1,   22,   22,   22,   22,   22,   22,
-       22,   22,   22,   22,   22,   22,   22,   22,   22,   22,
-       22,   22,   22,   22,   22,   22,   22,   22,   22,   22,
-       23,   24,   25,   26,   22,    1,   27,   28,   29,   30,
+        1,    2,    5,    6,    1,    1,    7,    8,    9,   10,
+       11,   12,   13,   14,   15,   16,   17,   18,   19,   19,
+       19,   19,   19,   19,   19,   19,   19,   20,   21,   22,
+       23,   24,    1,    1,   25,   25,   25,   25,   25,   25,
+       25,   25,   25,   25,   25,   25,   25,   25,   25,   25,
+       25,   25,   25,   25,   25,   25,   25,   25,   25,   25,
+       26,   27,   28,   29,   25,    1,   30,   31,   32,   33,
 
-       31,   32,   33,   34,   35,   22,   36,   37,   22,   38,
-       39,   22,   22,   40,   41,   42,   43,   44,   45,   46,
-       22,   22,   47,   48,   49,    1,    1,    1,    1,    1,
+       34,   35,   36,   37,   38,   25,   39,   40,   41,   42,
+       43,   25,   25,   44,   45,   46,   47,   48,   49,   25,
+       25,   25,   50,   51,   52,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -415,105 +418,124 @@ static const YY_CHAR yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static const YY_CHAR yy_meta[50] =
+static const YY_CHAR yy_meta[53] =
     {   0,
         1,    1,    2,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    3,    1,    1,    1,
-        1,    3,    1,    1,    1,    1,    3,    3,    3,    3,
+        1,    1,    1,    1,    1,    1,    1,    3,    3,    1,
+        1,    1,    1,    1,    3,    1,    1,    1,    1,    3,
         3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
-        3,    3,    3,    3,    3,    3,    1,    1,    1
+        3,    3,    3,    3,    3,    3,    3,    3,    3,    1,
+        1,    1
     } ;
 
-static const flex_int16_t yy_base[140] =
+static const flex_int16_t yy_base[172] =
     {   0,
-        0,    0,  159,  160,  160,  160,  138,  152,  160,  160,
-      132,  160,  160,  160,  160,  160,  160,  160,   39,   36,
-      160,   37,  135,   38,    0,  160,  160,  160,   21,  120,
-      114,   17,   25,   33,  121,  109,  110,  110,  114,  160,
-      160,  160,  160,  142,  141,  137,  136,  132,    0,  125,
-       51,  160,  160,  160,  160,  160,    0,  102,  109,  112,
-       95,   96,   94,   96,   94,    0,   91,   90,   91,   87,
-       94,   93,  160,  119,  118,  114,   56,    0,  107,   86,
-       95,   81,   92,   88,   87,   90,    0,    0,   73,   34,
-       84,   84,   76,  160,  101,  160,    0,   75,    0,   73,
+        0,    0,  201,  202,  202,  202,  197,  176,  192,  202,
+      189,  169,  202,  202,  202,  182,  202,  179,  202,   41,
+       38,   43,  202,  202,  170,  169,  168,    0,  202,  202,
+      202,   20,   30,   31,   26,   39,   35,  156,  155,   26,
+       34,  145,  150,  202,  135,  202,  202,  202,  179,  178,
+      202,  174,  173,  202,  202,  169,    0,   62,   67,   71,
+      202,  202,  202,    0,  137,  145,  133,  147,  134,  140,
+      127,  128,  125,  131,  127,  125,    0,  122,  118,  120,
+      121,  126,  125,  115,  123,  122,  202,  202,  150,  149,
+      145,   76,    0,   73,  116,  125,  120,  109,   49,  122,
 
-        0,   69,   66,   67,   68,   76,   56,    0,   72,   91,
-       59,    0,   70,   62,    0,   61,   58,   43,   50,    0,
-        0,    0,    0,    0,    0,   52,   39,   33,   42,  160,
-      160,   77,   80,   49,   83,   86,   89,   92,   95
+      120,  116,  108,  103,  117,    0,    0,    0,   99,   58,
+       99,   99,  109,  109,  101,  128,  202,  202,  202,    0,
+      100,    0,    0,   92,   99,   89,   95,    0,    0,  100,
+       87,   88,   89,   98,   90,    0,    0,    0,   82,  101,
+       85,    0,    0,   68,   67,   70,    0,   61,   65,   54,
+       62,    0,   51,   38,    0,    0,    0,    0,    0,   42,
+        0,    0,  202,  108,  111,   52,  114,  117,  120,  123,
+      126
     } ;
 
-static const flex_int16_t yy_def[140] =
+static const flex_int16_t yy_def[172] =
     {   0,
-      131,    1,  131,  131,  131,  131,  131,  132,  131,  131,
-      133,  131,  131,  131,  131,  131,  131,  131,  131,  131,
-      131,  131,  131,  131,  134,  131,  131,  131,  134,  134,
-      134,  134,  134,  134,  134,  134,  134,  134,  134,  131,
-      131,  131,  131,  132,  132,  131,  135,  136,  137,  131,
-      131,  131,  131,  131,  131,  131,  134,  134,  134,  134,
-      134,  134,  134,  134,  134,  134,  134,  134,  134,  134,
-      134,  134,  131,  131,  131,  136,  138,  137,  131,  134,
-      134,  134,  134,  134,  134,  134,  134,  134,  134,  134,
-      134,  134,  134,  131,  139,  131,  134,  134,  134,  134,
+      163,    1,  163,  163,  163,  163,  163,  163,  164,  163,
+      163,  165,  163,  163,  163,  163,  163,  163,  163,  163,
+      163,  163,  163,  163,  163,  163,  163,  166,  163,  163,
+      163,  166,  166,  166,  166,  166,  166,  166,  166,  166,
+      166,  166,  166,  163,  163,  163,  163,  163,  164,  164,
+      163,  163,  167,  163,  163,  168,  169,  163,  163,  163,
+      163,  163,  163,  166,  166,  166,  166,  166,  166,  166,
+      166,  166,  166,  166,  166,  166,  166,  166,  166,  166,
+      166,  166,  166,  166,  166,  166,  163,  163,  163,  163,
+      168,  170,  169,  163,  166,  166,  166,  166,  166,  166,
 
-      134,  134,  134,  134,  134,  134,  134,  134,  134,  139,
-      138,  134,  134,  134,  134,  134,  134,  134,  131,  134,
-      134,  134,  134,  134,  134,  131,  131,  131,  131,  131,
-        0,  131,  131,  131,  131,  131,  131,  131,  131
+      166,  166,  166,  166,  166,  166,  166,  166,  166,  166,
+      166,  166,  166,  166,  166,  171,  163,  163,  163,  166,
+      166,  166,  166,  166,  166,  166,  166,  166,  166,  166,
+      166,  166,  166,  166,  166,  166,  166,  166,  166,  171,
+      170,  166,  166,  166,  166,  166,  166,  166,  166,  166,
+      166,  166,  166,  166,  166,  166,  166,  166,  166,  166,
+      166,  166,    0,  163,  163,  163,  163,  163,  163,  163,
+      163
     } ;
 
-static const flex_int16_t yy_nxt[210] =
+static const flex_int16_t yy_nxt[255] =
     {   0,
         4,    5,    6,    7,    8,    9,   10,   11,   12,   13,
        14,   15,   16,   17,   18,   19,   20,   21,   22,   23,
-       24,   25,   26,    4,   27,   28,   25,   29,   30,   31,
-       32,   33,   25,   25,   34,   25,   25,   25,   25,   35,
-       36,   37,   25,   38,   39,   25,   40,   41,   42,   48,
-       50,   57,   51,   62,   49,   52,   53,   55,   56,   58,
-       59,   64,   63,   65,   66,   50,   77,   51,  105,  111,
-       67,   96,  130,  129,   96,  128,  106,   44,  127,   44,
-       46,  126,   46,   74,  125,   74,   76,   76,   76,   78,
-      124,   78,   95,   95,   95,  110,  110,  110,  123,  122,
+       24,   25,   26,   27,   28,   29,    4,   30,   31,   28,
+       32,   33,   34,   35,   36,   28,   28,   37,   28,   28,
+       28,   38,   28,   39,   40,   41,   28,   42,   43,   44,
+       45,   46,   56,   58,   64,   59,   59,   57,   58,   67,
+       60,   60,   65,   66,   70,   72,   68,   73,   74,   77,
+       83,   81,   69,   71,   82,  162,   78,   84,   75,   94,
+       94,   76,   58,  161,   59,   59,   58,   92,   60,   60,
+       94,   94,  117,  124,  125,  133,  141,  160,  159,  158,
 
-      121,  111,  120,  119,  118,  117,  116,  115,  114,  113,
-      112,  111,  109,  108,  107,  104,  103,  102,  101,  100,
-       99,   98,   97,   79,   77,   94,   94,   93,   92,   91,
-       90,   89,   88,   87,   86,   85,   84,   83,   82,   81,
-       80,   79,   77,   75,   73,   45,   45,   72,   71,   70,
-       69,   68,   61,   60,   54,   47,   45,   43,  131,    3,
-      131,  131,  131,  131,  131,  131,  131,  131,  131,  131,
-      131,  131,  131,  131,  131,  131,  131,  131,  131,  131,
-      131,  131,  131,  131,  131,  131,  131,  131,  131,  131,
-      131,  131,  131,  131,  131,  131,  131,  131,  131,  131,
+      157,  117,  156,  155,  134,  118,  154,  119,   49,  153,
+       49,   52,  141,   52,   89,  152,   89,   91,   91,   91,
+       93,  151,   93,  116,  116,  116,  140,  140,  140,  150,
+      149,  148,  147,  137,  146,  145,  144,  143,  142,  141,
+      139,  138,  137,  136,  135,  132,  131,  130,  129,  128,
+      127,  126,  123,  122,  121,  120,   92,   88,   88,  115,
+      114,  113,  112,  111,  110,  109,  108,  107,  106,  105,
+      104,  103,  102,  101,  100,   99,   98,   97,   96,   95,
+       92,   90,   88,   50,   50,   87,   86,   85,   80,   79,
+       63,   62,   61,   55,   54,   53,   51,   50,   48,   47,
 
-      131,  131,  131,  131,  131,  131,  131,  131,  131
+      163,    3,  163,  163,  163,  163,  163,  163,  163,  163,
+      163,  163,  163,  163,  163,  163,  163,  163,  163,  163,
+      163,  163,  163,  163,  163,  163,  163,  163,  163,  163,
+      163,  163,  163,  163,  163,  163,  163,  163,  163,  163,
+      163,  163,  163,  163,  163,  163,  163,  163,  163,  163,
+      163,  163,  163,  163
     } ;
 
-static const flex_int16_t yy_chk[210] =
+static const flex_int16_t yy_chk[255] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,   19,
-       20,  134,   20,   32,   19,   22,   22,   24,   24,   29,
-       29,   33,   32,   33,   34,   51,   77,   51,   90,  111,
-       34,   77,  129,  128,  111,  127,   90,  132,  126,  132,
-      133,  119,  133,  135,  118,  135,  136,  136,  136,  137,
-      117,  137,  138,  138,  138,  139,  139,  139,  116,  114,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,   20,   21,  166,   21,   21,   20,   22,   33,
+       22,   22,   32,   32,   34,   35,   33,   35,   36,   37,
+       41,   40,   33,   34,   40,  160,   37,   41,   36,   58,
+       58,   36,   59,  154,   59,   59,   60,   92,   60,   60,
+       94,   94,   92,   99,   99,  110,  141,  153,  151,  150,
 
-      113,  110,  109,  107,  106,  105,  104,  103,  102,  100,
-       98,   95,   93,   92,   91,   89,   86,   85,   84,   83,
-       82,   81,   80,   79,   76,   75,   74,   72,   71,   70,
-       69,   68,   67,   65,   64,   63,   62,   61,   60,   59,
-       58,   50,   48,   47,   46,   45,   44,   39,   38,   37,
-       36,   35,   31,   30,   23,   11,    8,    7,    3,  131,
-      131,  131,  131,  131,  131,  131,  131,  131,  131,  131,
-      131,  131,  131,  131,  131,  131,  131,  131,  131,  131,
-      131,  131,  131,  131,  131,  131,  131,  131,  131,  131,
-      131,  131,  131,  131,  131,  131,  131,  131,  131,  131,
+      149,  141,  148,  146,  110,   94,  145,   94,  164,  144,
+      164,  165,  140,  165,  167,  139,  167,  168,  168,  168,
+      169,  135,  169,  170,  170,  170,  171,  171,  171,  134,
+      133,  132,  131,  130,  127,  126,  125,  124,  121,  116,
+      115,  114,  113,  112,  111,  109,  105,  104,  103,  102,
+      101,  100,   98,   97,   96,   95,   91,   90,   89,   86,
+       85,   84,   83,   82,   81,   80,   79,   78,   76,   75,
+       74,   73,   72,   71,   70,   69,   68,   67,   66,   65,
+       56,   53,   52,   50,   49,   45,   43,   42,   39,   38,
+       27,   26,   25,   18,   16,   12,   11,    9,    8,    7,
 
-      131,  131,  131,  131,  131,  131,  131,  131,  131
+        3,  163,  163,  163,  163,  163,  163,  163,  163,  163,
+      163,  163,  163,  163,  163,  163,  163,  163,  163,  163,
+      163,  163,  163,  163,  163,  163,  163,  163,  163,  163,
+      163,  163,  163,  163,  163,  163,  163,  163,  163,  163,
+      163,  163,  163,  163,  163,  163,  163,  163,  163,  163,
+      163,  163,  163,  163
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -530,24 +552,25 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "token.l"
-#line 3 "token.l"
-#include <stdio.h>
+#line 1 "/home/liu/compiler/token.l"
+#line 2 "/home/liu/compiler/token.l"
 #include <iostream>
 #include <string>
-#include<vector>
-#include <memory>
+#include <vector>
 #include "ast.h"
 #include "parser.hpp"
 
-#define SAVE_TOKEN yylval.string = new std::string(yytext, yyleng)
-#define TOKEN(t) (yylval.token = t)
+#define STRING_TOKEN    yylval.val = new std::string(yytext, yyleng)
+#define TOKEN(t)        yylval.token = t
 
-int countline=0,countchar=0;
-std::string *escape(char ch[], int length);
-void count(void);
-#line 550 "token.cpp"
-#line 551 "token.cpp"
+int currentchar = 0;
+int currentline = 1;
+std::string curToken;
+void countchar();
+void countline();
+std::string* escapetochar(char ch[], int length);
+#line 573 "/home/liu/compiler/token.cpp"
+#line 574 "/home/liu/compiler/token.cpp"
 
 #define INITIAL 0
 
@@ -764,11 +787,11 @@ YY_DECL
 		}
 
 	{
-#line 21 "token.l"
+#line 21 "/home/liu/compiler/token.l"
 
-#line 23 "token.l"
-    /* match two types of comments */
-#line 772 "token.cpp"
+
+
+#line 795 "/home/liu/compiler/token.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -795,13 +818,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 132 )
+				if ( yy_current_state >= 164 )
 					yy_c = yy_meta[yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 160 );
+		while ( yy_base[yy_current_state] != 202 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -826,278 +849,323 @@ do_action:	/* This label is used only to access EOF actions. */
 			goto yy_find_action;
 
 case 1:
-/* rule 1 can match eol */
 YY_RULE_SETUP
-#line 24 "token.l"
-{ puts("COMMENT"); }
+#line 24 "/home/liu/compiler/token.l"
+{countchar();}
 	YY_BREAK
 case 2:
+/* rule 2 can match eol */
 YY_RULE_SETUP
-#line 25 "token.l"
-{ puts("COMMENT"); }
+#line 25 "/home/liu/compiler/token.l"
+{countline();};
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 27 "token.l"
-count();puts("TIF"); return TOKEN(TIF);
+#line 26 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TINC); return TINC;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 28 "token.l"
-count();puts("TELSE"); return TOKEN(TELSE);
+#line 27 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TDEC); return TDEC;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 29 "token.l"
-count();puts("TRETURN"); return TOKEN(TRETURN);
+#line 28 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TLSB); return TLSB;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 30 "token.l"
-count();puts("TBREAK"); return TOKEN(TBREAK);
+#line 29 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TRSB); return TRSB;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 31 "token.l"
-count();puts("TFOR"); return TOKEN(TFOR);
+#line 30 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TLMB); return TLMB;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 32 "token.l"
-count();puts("TWHILE"); return TOKEN(TWHILE);
+#line 31 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TRMB); return TRMB;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 33 "token.l"
-count();puts("TSTRUCT"); return TOKEN(TSTRUCT);
+#line 32 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TLLB); return TLLB;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 34 "token.l"
-count();SAVE_TOKEN; puts("TYINT");  return TYINT;
+#line 33 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TRLB); return TRLB;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 35 "token.l"
-count();SAVE_TOKEN; puts("TYDOUBLE"); return TYDOUBLE;
+#line 34 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TDOT); return TDOT;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 36 "token.l"
-count();SAVE_TOKEN; puts("TYFLOAT"); return TYFLOAT;
+#line 35 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TCOLON); return TCOLON;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 37 "token.l"
-count();SAVE_TOKEN; puts("TYCHAR"); return TYCHAR;
+#line 36 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TSEMI); return TSEMI;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 38 "token.l"
-count();SAVE_TOKEN; puts("TYBOOL"); return TYBOOL;
+#line 37 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TCOMMA); return TCOMMA;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 39 "token.l"
-count();SAVE_TOKEN; puts("TYSTRING"); return TYSTRING;
+#line 38 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TPLUS); return TPLUS;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 40 "token.l"
-count();SAVE_TOKEN; puts("TYVOID"); return TYVOID;
+#line 39 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TMINUS); return TMINUS;}
 	YY_BREAK
 case 17:
+/* rule 17 can match eol */
 YY_RULE_SETUP
-#line 41 "token.l"
-count();SAVE_TOKEN; puts("TEXTERN"); return TEXTERN;
+#line 40 "/home/liu/compiler/token.l"
+{countchar(); for(auto ch: std::string(yytext, yyleng)) if(ch == '\n') countline(); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 42 "token.l"
-count();SAVE_TOKEN; puts("TIDENTIFIER"); return TIDENTIFIER;
+#line 41 "/home/liu/compiler/token.l"
+{countchar(); STRING_TOKEN; return TBOOL;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 43 "token.l"
-count();SAVE_TOKEN; puts("TINTEGER"); return TINTEGER;
+#line 42 "/home/liu/compiler/token.l"
+{countchar(); STRING_TOKEN; return TINTEGER;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 44 "token.l"
-count();SAVE_TOKEN; puts("TDOUBLE"); return TDOUBLE;
+#line 43 "/home/liu/compiler/token.l"
+{countchar(); STRING_TOKEN; return TFNUMBER;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 45 "token.l"
-count();SAVE_TOKEN; puts("FLOAT"); return TFLOAT;
+#line 44 "/home/liu/compiler/token.l"
+{countchar(); STRING_TOKEN; return TDNUMBER;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 46 "token.l"
-count();SAVE_TOKEN; puts("TBOOL"); return TBOOL;
+#line 45 "/home/liu/compiler/token.l"
+{countchar(); yylval.val = escapetochar(yytext + 1, yyleng - 2); return TCHARACTER;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 47 "token.l"
-count();SAVE_TOKEN; puts("TCHAR"); return TCHAR;
+#line 46 "/home/liu/compiler/token.l"
+{countchar(); yylval.val = escapetochar(yytext + 1, yyleng - 2); return TSTR;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 48 "token.l"
-count();yylval.string = escape(yytext+1,yyleng-2); puts("TCHAR"); return TCHAR;
+#line 47 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TMUL); return TMUL;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 49 "token.l"
-count();yylval.string = escape(yytext+1,yyleng-2); puts("TSTRING"); return TSTRING;
+#line 48 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TDIV); return TDIV;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 50 "token.l"
-count();puts("TEQUAL"); return TOKEN(TEQUAL);
+#line 49 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TMOD); return TMOD;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 51 "token.l"
-count();puts("TCEQ"); return TOKEN(TCEQ);
+#line 50 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TXOR); return TXOR;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 52 "token.l"
-count();puts("TCNE"); return TOKEN(TCNE);
+#line 51 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TAND); return TAND;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 53 "token.l"
-count();puts("TCLT"); return TOKEN(TCLT);
+#line 52 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TOR); return TOR;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 54 "token.l"
-count();puts("TCLE"); return TOKEN(TCLE);
+#line 53 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TGT); return TGT;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 55 "token.l"
-count();puts("TCGT"); return TOKEN(TCGT);
+#line 54 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TGE); return TGE;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 56 "token.l"
-count();puts("TCGE"); return TOKEN(TCGE);
+#line 55 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TLT); return TLT;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 57 "token.l"
-count();puts("TLPAREN"); return TOKEN(TLPAREN);
+#line 56 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TLE); return TLE;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 58 "token.l"
-count();puts("TRPAREN"); return TOKEN(TRPAREN);
+#line 57 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TNE); return TNE;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 59 "token.l"
-count();puts("TLBRACE"); return TOKEN(TLBRACE);
+#line 58 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TNOT); return TNOT;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 60 "token.l"
-count();puts("TRBRACE"); return TOKEN(TRBRACE);
+#line 59 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TEQ); return TEQ;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 61 "token.l"
-count();puts("TLBRACKET"); return TOKEN(TLBRACKET);
+#line 60 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TASSIGN); return TASSIGN;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 62 "token.l"
-count();puts("TRBRACKET"); return TOKEN(TRBRACKET);
+#line 62 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TIF); return TIF;}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 63 "token.l"
-count();puts("TDOT"); return TOKEN(TDOT);
+#line 63 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TELSE); return TELSE;}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 64 "token.l"
-count();puts("TCOMMA"); return TOKEN(TCOMMA);
+#line 64 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TWHILE); return TWHILE;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 65 "token.l"
-count();puts("TPLUS"); return TOKEN(TPLUS);
+#line 65 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TFOR); return TFOR;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 66 "token.l"
-count();puts("TMINUS"); return TOKEN(TMINUS);
+#line 66 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TDO); return TDO;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 67 "token.l"
-count();puts("TMUL"); return TOKEN(TMUL);
+#line 67 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TBREAK); return TBREAK;}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 68 "token.l"
-count();puts("TDIV"); return TOKEN(TDIV);
+#line 68 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TCONTINUE); return TCONTINUE;}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 69 "token.l"
-count();puts("TAND"); return TOKEN(TAND);
+#line 69 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TSWITCH); return TSWITCH;}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 70 "token.l"
-count();puts("TOR"); return TOKEN(TOR);
+#line 70 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TCASE); return TCASE;}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 71 "token.l"
-count();puts("TXOR"); return TOKEN(TXOR);
+#line 71 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TDEFAULT); return TDEFAULT;}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 72 "token.l"
-count();puts("TMOD"); return TOKEN(TMOD);
+#line 72 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TRETURN); return TRETURN;}
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 73 "token.l"
-count();puts("TSHIFTR"); return TOKEN(TSHIFTR);
+#line 74 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TINT); return TINT;}
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 74 "token.l"
-count();puts("TSHIFTL"); return TOKEN(TSHIFTL);
+#line 75 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TCHAR); return TCHAR;}
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 75 "token.l"
-count();puts("TSEMICOLON"); return TOKEN(TSEMICOLON);
+#line 76 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TDOUBLE); return TDOUBLE;}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 76 "token.l"
-count();printf("Unknown token:%s\n", yytext); yyterminate();
+#line 77 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TFLOAT); return TFLOAT;}
 	YY_BREAK
 case 53:
-/* rule 53 can match eol */
 YY_RULE_SETUP
-#line 78 "token.l"
-{ count(); }
+#line 78 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TBOOLEAN); return TBOOLEAN;}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 80 "token.l"
+#line 79 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TCONST); return TCONST;}
+	YY_BREAK
+case 55:
+YY_RULE_SETUP
+#line 80 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TVOID); return TVOID;}
+	YY_BREAK
+case 56:
+YY_RULE_SETUP
+#line 81 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TENUM); return TENUM;}
+	YY_BREAK
+case 57:
+YY_RULE_SETUP
+#line 82 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TSTRING); return TSTRING;}
+	YY_BREAK
+case 58:
+YY_RULE_SETUP
+#line 84 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TNEW); return TNEW;}
+	YY_BREAK
+case 59:
+YY_RULE_SETUP
+#line 85 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TTHIS); return TTHIS;}
+	YY_BREAK
+case 60:
+YY_RULE_SETUP
+#line 86 "/home/liu/compiler/token.l"
+{countchar(); TOKEN(TSTRUCT); return TSTRUCT;}
+	YY_BREAK
+case 61:
+YY_RULE_SETUP
+#line 88 "/home/liu/compiler/token.l"
+{countchar(); STRING_TOKEN; return TID;}
+	YY_BREAK
+case 62:
+YY_RULE_SETUP
+#line 90 "/home/liu/compiler/token.l"
+{countchar(); printf("Unknown token!\n"); yyterminate();}
+	YY_BREAK
+case 63:
+YY_RULE_SETUP
+#line 91 "/home/liu/compiler/token.l"
 ECHO;
 	YY_BREAK
-#line 1101 "token.cpp"
+#line 1169 "/home/liu/compiler/token.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1394,7 +1462,7 @@ static int yy_get_next_buffer (void)
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 132 )
+			if ( yy_current_state >= 164 )
 				yy_c = yy_meta[yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -1422,11 +1490,11 @@ static int yy_get_next_buffer (void)
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 132 )
+		if ( yy_current_state >= 164 )
 			yy_c = yy_meta[yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
-	yy_is_jam = (yy_current_state == 131);
+	yy_is_jam = (yy_current_state == 163);
 
 		return yy_is_jam ? 0 : yy_current_state;
 }
@@ -2102,54 +2170,47 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 80 "token.l"
+#line 91 "/home/liu/compiler/token.l"
 
 
 
-
-void count(void)
+std::string *escapetochar(char ch[], int length)
 {
-    for(auto ch: std::string(yytext, yyleng)) 
-    {
-        if(ch == '\n')
-        {
-            countchar=0;
-            countline++;
-        }
-        else if(ch=='r')
-        {
-            countchar=0;
-        }
-        else
-        countchar++;
-    }
-}
-
-std::string *escape(char ch[], int length)
-{
-    std::vector<char> cVec;
+    std::vector<char> vecchar;
     int i;
     char prev = '\0';
     for (i = 0; i < length; i++) {
-        if (prev != '\\') {
-            if (ch[i] != '\\') {
-                cVec.push_back(ch[i]);
-            } else {
-                prev = '\\';
-            }
-        } else {
+         if (prev == '\\') {
             switch (ch[i])
             {
-            case 'n': cVec.push_back('\n'); prev = '\0'; break;
-            case 't': cVec.push_back('\t'); prev = '\0'; break;
-            case 'b': cVec.push_back('\b'); prev = '\0'; break;
-            case '\'': cVec.push_back('\''); prev = '\0'; break;
-            case '\"': cVec.push_back('\"'); prev = '\0'; break;
-            case '0': cVec.push_back('\0'); prev = '\0'; break;
-            case '\\': cVec.push_back('\\'); prev = '\0'; break;
+            case 'n': vecchar.push_back('\n'); prev = '\0'; break;
+            case 't': vecchar.push_back('\t'); prev = '\0'; break;
+            case 'b': vecchar.push_back('\b'); prev = '\0'; break;
+            case '\'': vecchar.push_back('\''); prev = '\0'; break;
+            case '\"': vecchar.push_back('\"'); prev = '\0'; break;
+            case '0': vecchar.push_back('\0'); prev = '\0'; break;
+            case '\\': vecchar.push_back('\\'); prev = '\0'; break;
             default: prev = '\0'; break;
             }
         }
+        else {
+            if (ch[i] != '\\') {
+                vecchar.push_back(ch[i]);
+            } else {
+                prev = '\\';
+            }
+        }
     }
-    return new std::string(cVec.begin(), cVec.end());
+    return new std::string(vecchar.begin(), vecchar.end());
+}
+
+void countchar() {
+    currentchar += yyleng;
+    curToken = std::move(yytext);
+}
+
+
+void countline() {
+    currentchar = 0;
+    currentline++;
 }

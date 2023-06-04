@@ -1,0 +1,6 @@
+/home/liu/compiler/CMakeFiles/intrinsics_gen.dir
+/home/liu/compiler/CMakeFiles/omp_gen.dir
+/home/liu/compiler/CMakeFiles/acc_gen.dir
+/home/liu/compiler/CMakeFiles/compiler.dir
+/home/liu/compiler/CMakeFiles/edit_cache.dir
+/home/liu/compiler/CMakeFiles/rebuild_cache.dir

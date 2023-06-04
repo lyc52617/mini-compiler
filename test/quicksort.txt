@@ -1,0 +1,37 @@
+void qsort(int a[1000], int low, int high){
+    if(low<high)
+    	{
+    		int key = a[low];
+    		int i=low;
+    		int j=high;
+    		while(i<j)
+    		{
+    			while((a[j]>=key)&&(i<j)) {j--;}
+    			a[i]=a[j];
+    			while((a[i]<=key)&&(i<j)) {i++;}
+    			a[j]=a[i];
+    		}
+    		a[i]=key;
+    		qsort(a, low,i-1);
+    		qsort(a, i+1,high);
+    	}
+};
+
+
+int n;
+scanf("%d", n);
+int array [10005]=new int[10005];
+int i =0;
+
+while(i<n) {
+    int tmp;
+    scanf("%d", tmp);
+    array[i] = tmp;
+    i++;
+}
+
+qsort(array, 0, n-1);
+
+for (i=0; i<n; i++) {
+    printf("%d\n", array[i]);
+}

@@ -1,0 +1,264 @@
+void prints(char s[300][300], int line, bool needNewLine) {
+    int i = 0;
+    while(s[line][i] != '\0') {
+        printf("%c", s[line][i]);
+        i++;
+    }
+    if(needNewLine) {
+        printf("\n");
+    }
+};
+int find(char course[300][300], char source[300], int n) {
+    int i = 0;
+    int j;
+    for(i=0; i<n; i++) {
+        j = 0;
+        while((course[i][j] == source[j]) && (source[j] != '\0')) {
+            j++;
+        }
+        if (course[i][j] == source[j]) {
+            return i;
+        }
+    }
+
+
+    return -1;
+};
+
+char course[300][300] = new char[300][300];
+char prev[300][300] = new char[300][300];
+int credit[300] = new int[300];
+int grade [300] = new int[300];
+bool learnt[300] = new boolean[300];
+bool prevReq[300] = new boolean[300];
+
+char line[300] = new char[300];
+
+char ch;
+int i = 0;
+int j;
+int k;
+int countor;
+int hourAttempted = 0;
+int hourCompleted = 0;
+int remaining = 0;
+int total = 0;
+int curGrade = -1;
+int tmp;
+int res;
+int james = 0;
+int index1;
+do {
+    index1 = 0;
+    countor = 0;
+    do {
+        res = scanf("%c", ch);
+        if(ch == '|')
+        {
+            countor++;
+        }
+        if ((res > 0) && (ch != '\0') && (ch != '\n')) {
+            line[index1] = ch;
+            index1++;
+        } else {
+            if((countor < 3) && (ch == '\n'))
+            {
+                ;
+            }
+            else
+            {
+                line[index1] = '\0';
+            } 
+        }
+    } while((res > 0) && (((ch != '\0') && (ch != '\n')) || ((ch == '\n') && (countor<3))));
+
+    if (index1 > 0) {
+        j = 0;
+        k = 0;
+        while(line[j] != '|') {
+            course[i][k] = line[j];
+            k++;
+            j++;
+        }
+        course[i][k] = '\0';
+        j++;
+        tmp = 0;
+        while(line[j] != '|') {
+            tmp = tmp * 10;
+            tmp = tmp + line[j] - '0';
+            j++;
+        }
+        j++;
+        credit[i] = tmp;
+        k = 0;
+        while(line[j] != '|') {
+            prev[i][k] = line[j];
+            k++;
+            j++;
+        }
+        if (prev[i][0] != '\0') {
+            prevReq[i] = true;
+        }
+        prev[i][k] = '\0';
+        j++;
+        if (line[j] == '\0') {
+            curGrade = -1;
+            grade[i] = -1;
+        } else if (line[j] != 'F') {
+            learnt[i] = true;
+            curGrade = 'A' - line[j] + 4;
+            grade[i] = curGrade;
+        } else {
+            curGrade = 0;
+            grade[i] = curGrade;
+        }
+        if (curGrade >= 0) {
+            hourAttempted = hourAttempted + tmp;
+            if (curGrade > 0) {
+                hourCompleted = hourCompleted + tmp;
+                total = total + tmp * curGrade;
+            } else {
+               remaining = remaining + tmp;
+            }
+        } else {
+            remaining = remaining + tmp;
+        }
+        
+
+        i++;
+    }
+} while(res > 0);
+
+int n = i;
+
+double gpa = 0.0;
+if (hourAttempted) {
+    gpa = total * 1.0 / hourAttempted;
+}
+printf("GPA: %1.1lf\n", gpa);
+printf("Hours Attempted: %d\n", hourAttempted);
+printf("Hours Completed: %d\n", hourCompleted);
+printf("Credits Remaining: %d\n", remaining);
+
+int prevMatrix[300][300] = new int[300][300];
+
+char curCourse[300] = new char[300];
+int toAdd[10] = new int[10];
+
+ int cur = 0;
+int curN = 0;
+int target;
+bool fast = false;
+int offset = 0;
+
+for(i=0; i<n; i++) {
+    j = 0;
+    k = 0;
+    cur = 1;
+    curN = 0;
+    offset = 0;
+    //printf("Prev of ");
+    //prints(course, i, false);
+    //printf(": ");
+    //prints(prevn, i, true);
+    fast = false;
+    while(prev[i][j] != '\0') {
+        if(prev[i][j] == ';') {
+            if(fast) {
+                fast = false;
+                cur = cur / 2;
+            } else {
+                curCourse[offset] = '\0';
+                offset = 0;
+                target = find(course, curCourse, n);
+                if (target == -1) {
+                    curN = 0;
+                } else {
+                    toAdd[curN++] = target;
+                }
+                for(k = 0; k<curN; k++) {
+                    prevMatrix[i][toAdd[k]] = prevMatrix[i][toAdd[k]] + cur;
+                    //prints(course, i, false);
+                    //printf(" relies on ");
+                    //prints(course, toAdd[k], false);
+                    //printf(" with type: %d\n", cur);
+                }
+            }
+            curN = 0;
+            cur = cur * 2;
+            if (cur == 0) {
+                cur = 1;
+            }
+        } else {
+            if(!fast) {
+                if(prev[i][j] == ',') {
+                    curCourse[offset] = '\0';
+                    offset = 0;
+                    target = find(course, curCourse, n);
+                    if (target == -1) {
+                        fast = true;
+                    } else {
+                        toAdd[curN++] = target;
+                    }
+                } else {
+                    curCourse[offset] = prev[i][j];
+                    offset++;
+                }
+            }
+        }
+        j++;
+    }
+    if(!fast) {
+        curCourse[offset] = '\0';
+        offset = 0;
+        target = find(course, curCourse, n);
+        if (target == -1) {
+            curN = 0;
+        } else {
+            toAdd[curN++] = target;
+        }
+        for(k = 0; k<curN; k++) {
+            prevMatrix[i][toAdd[k]] = prevMatrix[i][toAdd[k]] + cur;
+            //prints(course, i, false);
+            //printf(" relies on ");
+            //prints(course, toAdd[k], false);
+            //printf(" with type: %d\n", cur);
+        }
+    }
+}
+
+int toTake = 0;
+boolean sat = true;
+boolean hasPreCur = false;
+printf("\nPossible Courses to Take Next\n");
+for(i = 0; i<n; i++) {
+    hasPreCur = false;
+    for(j=1; j<=1024; j=j*2) {
+        sat = true;
+        hasPreCur = false;
+        for(k=0; k<n; k++) {
+            if (((prevMatrix[i][k] / j) % 2) == 1) {
+                hasPreCur = true;
+                if (!learnt[k]) {
+                    sat = false;
+                }
+            }
+        }
+        if (sat && hasPreCur && (!learnt[i])) {
+            toTake++;
+            printf("  ");
+            prints(course, i, true);
+            break;
+        }
+    }
+    if((!prevReq[i]) && (!learnt[i])) {
+        toTake++;
+        printf("  ");
+        prints(course, i, true);
+    }
+}
+if ((toTake == 0) && (remaining == 0)) {
+    printf("  None - Congratulations!\n");
+}    
+
+                                                                                                                         

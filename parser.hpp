@@ -30,8 +30,8 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_PARSER_HPP_INCLUDED
-# define YY_YY_PARSER_HPP_INCLUDED
+#ifndef YY_YY_HOME_LIU_COMPILER_PARSER_HPP_INCLUDED
+# define YY_YY_HOME_LIU_COMPILER_PARSER_HPP_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -45,58 +45,65 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    TIDENTIFIER = 258,
-    TINTEGER = 259,
-    TDOUBLE = 260,
-    TCHAR = 261,
-    TSTRING = 262,
-    TBOOL = 263,
-    TFLOAT = 264,
-    TYINT = 265,
-    TYDOUBLE = 266,
-    TYFLOAT = 267,
-    TYCHAR = 268,
-    TYBOOL = 269,
-    TYVOID = 270,
-    TYSTRING = 271,
-    TEXTERN = 272,
-    TLITERAL = 273,
-    TCEQ = 274,
-    TCNE = 275,
-    TCLT = 276,
-    TCLE = 277,
-    TCGT = 278,
-    TCGE = 279,
-    TEQUAL = 280,
-    TLPAREN = 281,
-    TRPAREN = 282,
-    TLBRACE = 283,
-    TRBRACE = 284,
+    TLSB = 258,
+    TRSB = 259,
+    TLMB = 260,
+    TRMB = 261,
+    TLLB = 262,
+    TRLB = 263,
+    TDOT = 264,
+    TCOLON = 265,
+    TSEMI = 266,
+    TPLUS = 267,
+    TMINUS = 268,
+    TMUL = 269,
+    TDIV = 270,
+    TMOD = 271,
+    TXOR = 272,
+    TAND = 273,
+    TOR = 274,
+    TQUOTE = 275,
+    TSTRUCT = 276,
+    TGT = 277,
+    TGE = 278,
+    TLT = 279,
+    TLE = 280,
+    TNE = 281,
+    TEQ = 282,
+    TASSIGN = 283,
+    TNOT = 284,
     TCOMMA = 285,
-    TDOT = 286,
-    TSEMICOLON = 287,
-    TLBRACKET = 288,
-    TRBRACKET = 289,
-    TQUOTATION = 290,
-    TPLUS = 291,
-    TMINUS = 292,
-    TMUL = 293,
-    TDIV = 294,
-    TAND = 295,
-    TOR = 296,
-    TMOD = 297,
-    TNEG = 298,
-    TNOT = 299,
-    TSHIFTL = 300,
-    TSHIFTR = 301,
-    TIF = 302,
-    TELSE = 303,
-    TFOR = 304,
-    TWHILE = 305,
-    TRETURN = 306,
-    TBREAK = 307,
-    TSTRUCT = 308,
-    TXOR = 309
+    TINC = 286,
+    TDEC = 287,
+    TIF = 288,
+    TELSE = 289,
+    TWHILE = 290,
+    TFOR = 291,
+    TDO = 292,
+    TBREAK = 293,
+    TCONTINUE = 294,
+    TSWITCH = 295,
+    TCASE = 296,
+    TDEFAULT = 297,
+    TINT = 298,
+    TCHAR = 299,
+    TDOUBLE = 300,
+    TFLOAT = 301,
+    TBOOLEAN = 302,
+    TCONST = 303,
+    TVOID = 304,
+    TENUM = 305,
+    TSTRING = 306,
+    TNEW = 307,
+    TTHIS = 308,
+    TRETURN = 309,
+    TID = 310,
+    TINTEGER = 311,
+    TBOOL = 312,
+    TDNUMBER = 313,
+    TFNUMBER = 314,
+    TCHARACTER = 315,
+    TSTR = 316
   };
 #endif
 
@@ -105,21 +112,23 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 17 "parser.y" /* yacc.c:1909  */
+#line 20 "/home/liu/compiler/parser.y" /* yacc.c:1909  */
 
-	ASTnode *node;
-	NBlock *block;
-	NExpression *expression;
-	NStatement *statement;
-	NIdentifier *identifier;
-	NVariableDeclaration* var_decl;
-	VariableList *varvec;
-	ExpressionList *exprvec;
-	Narrayelement *element;
-	std::string *string;
-	int token;
+    std::string* val;
+    std::string* type;
+    Node *node;
+    NBlock *block;
+    NExpression *expr;
+	NStructMember* stmb;
+    NStatement *stmt;
+    NIdentifier *id;
+    NVariableDeclaration *varDecl;
+    VariableList *varVec;
+    ExpressionList *expVec;
+    ArrayDimension *arrDim;
+    int32_t token;
 
-#line 123 "parser.hpp" /* yacc.c:1909  */
+#line 132 "/home/liu/compiler/parser.hpp" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -132,4 +141,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_PARSER_HPP_INCLUDED  */
+#endif /* !YY_YY_HOME_LIU_COMPILER_PARSER_HPP_INCLUDED  */

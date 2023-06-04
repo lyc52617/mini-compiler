@@ -1,265 +1,387 @@
-#include<iostream>
-#include<vector>
-#include <llvm/IR/Value.h>
-#include <memory>
+#ifndef NODE_H
+#define NODE_H
+
+#include <iostream>
+#include <utility>
+#include <vector>
 #include <string>
-using std::shared_ptr;
-using std::cout;
-using std::cin;
-using std::make_shared;
-using std::string;
-using std::endl;
+#include <llvm/IR/Value.h>
+
 class CodeGenContext;
+
 class NStatement;
+
 class NExpression;
 
-typedef std::vector<shared_ptr<NStatement>> StatementList;
-typedef std::vector<shared_ptr<NExpression>> ExpressionList;
-typedef std::vector<shared_ptr<NVariableDeclaration>> VariableList;
-class ASTnode
-{
+class NVariableDeclaration;
+
+typedef std::vector<NStatement *> StatementList;
+typedef std::vector<NExpression *> ExpressionList;
+typedef std::vector<NVariableDeclaration *> VariableList;
+typedef std::vector<std::string *> ArrayDimension;
+
+class Node {
 public:
-    ASTnode(){}
-    virtual ~ASTnode(){}
-    //virtual void printtype() =0;
-    //virtual string gettypename() const=0;
-    //virtual llvm::value *codeGen() = 0;
+    virtual ~Node() = default;
+
+    virtual llvm::Value *codeGen(CodeGenContext &context) { return nullptr; }
 };
 
-class NExpression : public ASTnode {
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+class NExpression : public Node {
+public:
+    virtual int getDType();
 };
 
-class NStatement : public ASTnode {
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+class NStatement : public Node {
+};
+
+class NIdentifier : public NExpression {
+public:
+    std::string name;
+    bool isstruct = false;
+    explicit NIdentifier(std::string name) : name(std::move(name)) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
+
+    virtual ArrayDimension *getArrayDim() { return nullptr; }
 };
 
 class NInteger : public NExpression {
 public:
-    long long value;
-    NInteger(long long value) : value(value) { }
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    int32_t value;
+
+    explicit NInteger(const std::string &value) : value(std::strtol(value.c_str(), nullptr, 10)) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
+    int getDType() override;
 };
 
 class NFloat : public NExpression {
 public:
     float value;
-    NFloat(double value) : value(value) { }
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+
+    explicit NFloat(const std::string &value) : value(std::strtof(value.c_str(), nullptr)) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
+    int getDType() override;
 };
-class NString : public NExpression {
-public:
-    string value;
-    NString(string &value) : value(value){}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
-};
+
 class NDouble : public NExpression {
 public:
     double value;
-    NDouble(double value) : value(value){}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+
+    explicit NDouble(const std::string &value) : value(std::strtod(value.c_str(), nullptr)) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
+    int getDType() override;
 };
-class NBool : public NExpression {
+
+class NBoolean : public NExpression {
 public:
     bool value;
-    NBool(string &value) : value(value == "true"){}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+
+    explicit NBoolean(const std::string &value) : value(value == "true") {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
+    int getDType() override;
 };
+
 class NChar : public NExpression {
 public:
     char value;
-    NChar(string &value) : value(value[0]){}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+
+    explicit NChar(const std::string &value) : value(value[0]) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
+    int getDType() override;
 };
+
+class NString : public NExpression {
+public:
+    std::string value;
+
+    explicit NString(std::string value) : value(std::move(value)) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
+};
+
 class NVoid : public NExpression {
 public:
     NVoid() = default;
 
-    llvm::Value *codeGen(CodeGenContext &context) ;
-};
-class NIdentifier : public NExpression {
-public:
-    std::string name;
-    std::string type;
-    bool isarray = false;
-    shared_ptr<ExpressionList> arraySize = make_shared<ExpressionList>();
-    NIdentifier(){}
-    NIdentifier(const std::string &name) : name(name) { }
-    NIdentifier(const std::string &name,std::string type) : name(name),type(type) { }
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
 
-class NFunctionCall : public NExpression {
+class NArray : public NExpression {
 public:
-    const shared_ptr<NIdentifier> id;
-    shared_ptr<ExpressionList> arguments=make_shared<ExpressionList>();
-    NFunctionCall(const shared_ptr<NIdentifier> id, shared_ptr<ExpressionList> arguments) :
-        id(id), arguments(arguments) { }
-    NFunctionCall(const shared_ptr<NIdentifier> id) : id(id) { }
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    NIdentifier *type;
+    ArrayDimension *arrDim;
+    ExpressionList *initList;
+
+    NArray(NIdentifier *type, ArrayDimension *arrDim,ExpressionList *initList = nullptr) :
+            type(type), initList(initList),arrDim(arrDim) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
 
 class NBinaryOperator : public NExpression {
 public:
     int op;
-	shared_ptr<NExpression> lhs;
-	shared_ptr<NExpression> rhs;
-    NExpression& rhs;
-    NBinaryOperator(shared_ptr<NExpression> lhs, int op, shared_ptr<NExpression> rhs) :
-        lhs(lhs), rhs(rhs), op(op) { }
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    NExpression *lhs;
+    NExpression *rhs;
+
+    NBinaryOperator(NExpression *lhs, int op, NExpression *rhs) : lhs(lhs), rhs(rhs), op(op) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
+};
+
+class NUnaryOperator : public NExpression {
+public:
+    int op;
+    NExpression *rhs;
+
+    NUnaryOperator(int op, NExpression *rhs) : op(op), rhs(rhs) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
 
 class NAssignment : public NExpression {
 public:
-    shared_ptr<NIdentifier> lhs;
-    shared_ptr<NExpression> rhs;
-    NAssignment(shared_ptr<NIdentifier> lhs, shared_ptr<NExpression> rhs) : 
-        lhs(lhs), rhs(rhs) { }
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    NIdentifier &lhs;
+    NExpression &rhs;
+
+    bool allowDecl = false;
+
+    NAssignment(NIdentifier &lhs, NExpression &rhs, bool allowDecl = false) : lhs(lhs), rhs(rhs),
+                                                                              allowDecl(allowDecl) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
 
-class Narrayelement : public NExpression{
+class NClassAssignment : public NAssignment {
 public:
-    shared_ptr<NExpression> arrayname;
-    shared_ptr<ExpressionList> expressions = make_shared<ExpressionList>();
-    Narrayelement(shared_ptr<NExpression> arrayname,shared_ptr<ExpressionList> expressions):
-    arrayname(arrayname),expressions(expressions){}
-    Narrayelement(shared_ptr<NExpression> arrayname,shared_ptr<NExpression> expression):
-    arrayname(arrayname){expressions->push_back(expression);}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    NIdentifier &attribute;
+
+    NClassAssignment(NIdentifier &lhs, NIdentifier &attribute, NExpression &rhs)
+            : attribute(attribute), NAssignment(lhs, rhs) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
-class Narrayelementassign : public NExpression{
+
+class NArrayAssignment : public NAssignment {
 public:
-    shared_ptr<Narrayelement> element;
-    shared_ptr<NExpression> assign;
-    Narrayelementassign(shared_ptr<Narrayelement> element,shared_ptr<NExpression> assign):
-    element(element),assign(assign){}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    ExpressionList arrayIndices;
+
+    NArrayAssignment(NIdentifier &lhs, ExpressionList &arrayIndices, NExpression &rhs)
+            : arrayIndices(arrayIndices), NAssignment(lhs, rhs) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
+
 class NBlock : public NExpression {
 public:
-    shared_ptr<StatementList> statements;
-    NBlock(){}
-    NBlock(shared_ptr<StatementList> statements):statements(statements) { }
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    StatementList statements;
+
+    NBlock() = default;
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
 
 class NExpressionStatement : public NStatement {
 public:
-    shared_ptr<NExpression> expression;
-    NExpressionStatement(shared_ptr<NExpression> expression) : 
-        expression(expression) { }
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    NExpression *expression;
+
+    explicit NExpressionStatement(NExpression *expression = nullptr) : expression(expression) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
+};
+
+class NReturnStatement : public NStatement {
+public:
+    NExpression *expression;
+
+    explicit NReturnStatement(NExpression *expression = nullptr) : expression(expression) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
 
 class NVariableDeclaration : public NStatement {
 public:
-	const shared_ptr<NIdentifier> type;
-	shared_ptr<NIdentifier> id;
-	shared_ptr<NExpression> assignmentExpr = nullptr;
+    NIdentifier &type;
+    NIdentifier &id;
+    NExpression *assignmentExpr;
+    const bool isConst;
+    bool isarray=false;
+    ArrayDimension *arrDim = nullptr;
 
-    NVariableDeclaration(){}
+    NVariableDeclaration(const bool isConst, NIdentifier &type, NIdentifier &id) : isConst(isConst),
+                                                                                  type(type),
+                                                                                  id(id) { assignmentExpr = nullptr; }
 
-	NVariableDeclaration(const shared_ptr<NIdentifier> type, shared_ptr<NIdentifier> id, shared_ptr<NExpression> assignmentExpr = NULL)
-		: type(type), id(id), assignmentExpr(assignmentExpr) {
-            cout << "isArray = " << type->isarray << endl;
-            assert(!type->isarray || (type->isarray && type->arraySize != nullptr));
-	}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    NVariableDeclaration(const bool isConst, NIdentifier &type, NIdentifier &id, NExpression *assignmentExpr)
+            : isConst(isConst), type(type), id(id), assignmentExpr(assignmentExpr) {}
+
+    NVariableDeclaration(const bool isConst, bool isarray,ArrayDimension *arrDim,NIdentifier &type, NIdentifier &id, NExpression *assignmentExpr)
+            : isConst(isConst), isarray(isarray),arrDim(arrDim),type(type), id(id), assignmentExpr(assignmentExpr) {}
+    NVariableDeclaration(const bool isConst, bool isarray,ArrayDimension *arrDim,NIdentifier &type, NIdentifier &id)
+            : isConst(isConst), isarray(isarray),arrDim(arrDim),type(type), id(id){assignmentExpr = nullptr;}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
 
 class NFunctionDeclaration : public NStatement {
 public:
-    const shared_ptr<NIdentifier> type;
-    const shared_ptr<NIdentifier> id;
+    const NIdentifier &type;
+    const NIdentifier &id;
     VariableList arguments;
-    shared_ptr<NBlock> block;
-    NFunctionDeclaration(const shared_ptr<NIdentifier> type, const shared_ptr<NIdentifier> id, 
-            VariableList arguments, shared_ptr<NBlock> block) :
-        type(type), id(id), arguments(arguments), block(block) { }
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    NBlock &block;
+
+    NFunctionDeclaration(const NIdentifier &type, const NIdentifier &id,
+                         VariableList arguments, NBlock &block) : type(type), id(id), arguments(std::move(arguments)),
+                                                                  block(block) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
 
-class Nbreak : public NStatement{
-    //Nbreak(){}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
-};
-class Nforloop : public NStatement{
+class NFunctionCall : public NExpression {
 public:
-    shared_ptr<NExpression> initial;
-    shared_ptr<NExpression> condition;
-    shared_ptr<NExpression> end;
-    shared_ptr<NBlock> block;
-    Nforloop(shared_ptr<NExpression> i,shared_ptr<NExpression> c,shared_ptr<NExpression> e,shared_ptr<NBlock> b):
-    initial(i),condition(c),end(e),block(b)
-    {
-        if( condition == nullptr ){
-            condition = make_shared<NInteger>(1);
-        }
-    }
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    const NIdentifier &id;
+    ExpressionList params;
+
+    NFunctionCall(const NIdentifier &id, ExpressionList &params) : id(id), params(params) {}
+
+    NFunctionCall(const NIdentifier &id) : id(id) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
 
-class Nstructdeclaration:public NStatement{
+class NArrayElement : public NExpression {
 public:
-    shared_ptr<NExpression> structname;
-    VariableList variablelist;
-    Nstructdeclaration(shared_ptr<NExpression> structname,VariableList variablelist):
-    structname(structname),variablelist(variablelist)
-    {}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    const NIdentifier &id;
+    ExpressionList arrayIndices;
+
+    NArrayElement(const NIdentifier &id, ExpressionList &arrayIndices) : id(id), arrayIndices(arrayIndices) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
 
-class Narrayinitialize:public NStatement{
+class NStructdec : public NStatement
+{
 public:
-    shared_ptr<NVariableDeclaration> arrayinit;
-    shared_ptr<ExpressionList> assign;
-    Narrayinitialize(shared_ptr<NVariableDeclaration> arrayinit,shared_ptr<ExpressionList> assign=nullptr):
-    arrayinit(arrayinit),assign(assign){}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    const NIdentifier &structid;
+    VariableList members;
+    NStructdec (NIdentifier &structid,VariableList &members):structid(structid),members(members){}
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
 
-class Nifelse: public NStatement{
+class NStructMember : public NExpression
+{
 public:
-    shared_ptr<NBlock> ifblock;
-    shared_ptr<NBlock> elseblock;
-    shared_ptr<NExpression> condition;
-    Nifelse(shared_ptr<NExpression> condition,shared_ptr<NBlock> ifblock,shared_ptr<NBlock> elseblock=nullptr):
-    condition(condition),ifblock(ifblock),elseblock(elseblock){}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    NIdentifier& id;
+    NIdentifier& member;
+    NStructMember(NIdentifier& id,NIdentifier& member):id(id),member(member){}
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
-
-class Nreturn: public NStatement{
+class NStructAssignment : public NExpression {
 public:
-    shared_ptr<NExpression> expression;
-    Nreturn(){expression=nullptr;}
-    Nreturn(shared_ptr<NExpression> expression = nullptr) : expression(expression) {}
+    NStructMember &structmember;
+    NExpression* expression; 
 
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    NStructAssignment(NStructMember &structmember,NExpression* expression)
+            : structmember(structmember),expression(expression) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
-
-class Nwhile: public NStatement{
+class NArrayType : public NIdentifier {
 public:
-    shared_ptr<NBlock> whileblock;
-    shared_ptr<NExpression> condition;
-    Nwhile(shared_ptr<NBlock> whileblock,shared_ptr<NExpression> condition):whileblock(whileblock),condition(condition){}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    ArrayDimension *arrDim;
+
+    NArrayType(NIdentifier &id,ArrayDimension *arrDim) : NIdentifier(id),arrDim(arrDim) {}
+
+    ArrayDimension *getArrayDim() override { return arrDim; }
 };
 
-class NStructmember: public NExpression{
+class NNullstatement : public NStatement {
 public:
-    shared_ptr<NIdentifier> structname;
-    shared_ptr<NIdentifier> member;
-    NStructmember(shared_ptr<NIdentifier> structname,shared_ptr<NIdentifier> member):structname(structname),member(member){}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+     llvm::Value *codeGen(CodeGenContext &context) override;
+};
+class NIfStatement : public NStatement {
+public:
+    NExpression *condition;
+    NBlock *thenBlock;
+    NBlock *elseBlock;
+
+    NIfStatement(NExpression *condition, NBlock *thenBlock, NBlock *elseBlock = nullptr) :
+            condition(condition), thenBlock(thenBlock), elseBlock(elseBlock) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
 
-class Nstructassign:public NExpression{
+class NForStatement : public NStatement {
 public:
-    shared_ptr<NStructmember> member;
-    shared_ptr<NExpression> assign;
-    Nstructassign(shared_ptr<NStructmember> member,shared_ptr<NExpression> assign):
-    member(member),assign(assign){}
-    //virtual llvm::value* codeGen(CodeGenContext& context);
+    NStatement *init;
+    NExpression *condition;
+    NStatement *increment;
+    NBlock *block;
+
+    NForStatement(NStatement *init, NExpression *condition, NStatement *increment, NBlock *block) :
+            init(init), condition(condition), increment(increment), block(block) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
 };
+
+class NBreakStatement : public NStatement {
+public:
+    llvm::Value *codeGen(CodeGenContext &context) override;
+};
+
+class NContinueStatement : public NStatement {
+public:
+    llvm::Value *codeGen(CodeGenContext &context) override;
+};
+
+class NIncOperator : public NUnaryOperator {
+public:
+    bool isPrefix;
+
+    NIncOperator(int op, NExpression *rhs, bool isPrefix) : NUnaryOperator(op, rhs), isPrefix(isPrefix) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
+};
+
+class NDecOperator : public NUnaryOperator {
+public:
+    bool isPrefix;
+
+    NDecOperator(int op, NExpression *rhs, bool isPrefix) : NUnaryOperator(op, rhs), isPrefix(isPrefix) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
+};
+
+class NWhileStatement : public NStatement {
+public:
+    NExpression *condition;
+    NBlock *block;
+
+    NWhileStatement(NExpression *condition, NBlock *block) : condition(condition), block(block) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
+};
+
+class NDoWhileStatement : public NStatement {
+public:
+    NExpression *condition;
+    NBlock *block;
+
+    NDoWhileStatement(NExpression *condition, NBlock *block) : condition(condition), block(block) {}
+
+    llvm::Value *codeGen(CodeGenContext &context) override;
+};
+
+class arraydim{
+public:
+uint64_t calArrayDim(std::vector<std::string* >* arrDim, std::vector<uint32_t>* arrSize);
+
+uint64_t calArrayDim(std::vector<std::string* >* arrDim) ;
+};
+#endif
