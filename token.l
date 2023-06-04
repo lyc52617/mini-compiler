@@ -1,127 +1,133 @@
-
 %{
-#include <stdio.h>
 #include <iostream>
 #include <string>
-#include<vector>
-#include <memory>
+#include <vector>
 #include "ast.h"
 #include "parser.hpp"
 
-#define SAVE_TOKEN yylval.string = new std::string(yytext, yyleng)
-#define TOKEN(t) (yylval.token = t)
+#define STRING_TOKEN    yylval.val = new std::string(yytext, yyleng)
+#define TOKEN(t)        yylval.token = t
 
-int countline=0,countchar=0;
-std::string *escape(char ch[], int length);
-void count(void);
+int currentchar = 0;
+int currentline = 1;
+std::string curToken;
+void countchar();
+void countline();
+std::string* escapetochar(char ch[], int length);
 %}
 
 %option noyywrap
 
 %%
-    /* match two types of comments */
-"/*"[^*]*[*]+([^*/][^*]*[*]+)*"/"						{ puts("COMMENT"); }
-"//".*													{ puts("COMMENT"); }
 
-"if"                    count();puts("TIF"); return TOKEN(TIF);
-"else"                  count();puts("TELSE"); return TOKEN(TELSE);
-"return"                count();puts("TRETURN"); return TOKEN(TRETURN);
-"break"                count();puts("TBREAK"); return TOKEN(TBREAK);
-"for"                   count();puts("TFOR"); return TOKEN(TFOR);
-"while"                 count();puts("TWHILE"); return TOKEN(TWHILE);
-"struct"                count();puts("TSTRUCT"); return TOKEN(TSTRUCT);
-"int"                   count(); puts("TYINT");  return TOEKN(TYINT);
-"double"                count(); puts("TYDOUBLE"); return TOEKN(TYDOUBLE);
-"float"                 count(); puts("TYFLOAT"); return TOEKN(TYFLOAT);
-"char"                  count(); puts("TYCHAR"); return TOEKN(TYCHAR);
-"bool"                  count(); puts("TYBOOL"); return TOEKN(TYBOOL);
-"string"                count(); puts("TYSTRING"); return TOEKN(TYSTRING);
-"void"                  count(); puts("TYVOID"); return TOEKN(TYVOID);
-"extern"                count(); puts("TEXTERN"); return TOEKN(TEXTERN);
-[a-zA-Z_][a-zA-Z0-9_]*	count(); puts("TIDENTIFIER"); return TIDENTIFIER;
-[0-9]+  				count();SAVE_TOKEN; puts("TINTEGER"); return TINTEGER;
-[0-9]+\.[0-9]*			count();SAVE_TOKEN; puts("TDOUBLE"); return TDOUBLE;
-[0-9]+\.[0-9]*			count();SAVE_TOKEN; puts("FLOAT"); return TFLOAT;
-"true|false"            count();SAVE_TOKEN; puts("TBOOL"); return TBOOL;
-\'.\'                   count();SAVE_TOKEN; puts("TCHAR"); return TCHAR;
-\'\\.\'                 count();yylval.string = escape(yytext+1,yyleng-2); puts("TCHAR"); return TCHAR;
-\".*\"                  count();yylval.string = escape(yytext+1,yyleng-2); puts("TSTRING"); return TSTRING;
-"="						count();puts("TEQUAL"); return TOKEN(TEQUAL);
-"=="					count();puts("TCEQ"); return TOKEN(TCEQ);
-"!="                    count();puts("TCNE"); return TOKEN(TCNE);
-"<"                     count();puts("TCLT"); return TOKEN(TCLT);
-"<="                    count();puts("TCLE"); return TOKEN(TCLE);
-">"                     count();puts("TCGT"); return TOKEN(TCGT);
-">="                    count();puts("TCGE"); return TOKEN(TCGE);
-"("                     count();puts("TLPAREN"); return TOKEN(TLPAREN);
-")"                     count();puts("TRPAREN"); return TOKEN(TRPAREN);
-"{"                     count();puts("TLBRACE"); return TOKEN(TLBRACE);
-"}"                     count();puts("TRBRACE"); return TOKEN(TRBRACE);
-"["                     count();puts("TLBRACKET"); return TOKEN(TLBRACKET);
-"]"                     count();puts("TRBRACKET"); return TOKEN(TRBRACKET);
-"."                     count();puts("TDOT"); return TOKEN(TDOT);
-","                     count();puts("TCOMMA"); return TOKEN(TCOMMA);
-"+"                     count();puts("TPLUS"); return TOKEN(TPLUS);
-"-"                     count();puts("TMINUS"); return TOKEN(TMINUS);
-"*"                     count();puts("TMUL"); return TOKEN(TMUL);
-"/"                     count();puts("TDIV"); return TOKEN(TDIV);
-"&&"                     count();puts("TAND"); return TOKEN(TAND);
-"||"                     count();puts("TOR"); return TOKEN(TOR);
-"%"                     count();puts("TMOD"); return TOKEN(TMOD);
-">>"                    count();puts("TSHIFTR"); return TOKEN(TSHIFTR);
-"<<"                    count();puts("TSHIFTL"); return TOKEN(TSHIFTL);
-";"                     count();puts("TSEMICOLON"); return TOKEN(TSEMICOLON);
-.						count();printf("Unknown token:%s\n", yytext); yyterminate();
 
-[ \t\v\n\f\r]             { count(); }
+[ \t]                   {countchar();}
+\n|\r\n                 {countline();};
+"++"                    {countchar(); TOKEN(TINC); return TINC;}
+"--"                    {countchar(); TOKEN(TDEC); return TDEC;}
+"("                     {countchar(); TOKEN(TLSB); return TLSB;}
+")"                     {countchar(); TOKEN(TRSB); return TRSB;}
+"["                     {countchar(); TOKEN(TLMB); return TLMB;}
+"]"                     {countchar(); TOKEN(TRMB); return TRMB;}
+"{"                     {countchar(); TOKEN(TLLB); return TLLB;}
+"}"                     {countchar(); TOKEN(TRLB); return TRLB;}
+"."                     {countchar(); TOKEN(TDOT); return TDOT;}
+":"                     {countchar(); TOKEN(TCOLON); return TCOLON;}
+";"                     {countchar(); TOKEN(TSEMI); return TSEMI;}
+","                     {countchar(); TOKEN(TCOMMA); return TCOMMA;}
+"+"                     {countchar(); TOKEN(TPLUS); return TPLUS;}
+"-"                     {countchar(); TOKEN(TMINUS); return TMINUS;}
+"//".*|[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]              {countchar(); for(auto ch: std::string(yytext, yyleng)) if(ch == '\n') countline(); }
+true|false                {countchar(); STRING_TOKEN; return TBOOL;}
+0|[1-9][0-9]*              {countchar(); STRING_TOKEN; return TINTEGER;}
+[0-9]+(\.[0-9]+)f            {countchar(); STRING_TOKEN; return TFNUMBER;}
+[0-9]+(\.[0-9]+)d?             {countchar(); STRING_TOKEN; return TDNUMBER;}
+'.'|'\\.'               {countchar(); yylval.val = escapetochar(yytext + 1, yyleng - 2); return TCHARACTER;}
+\".*\"                  {countchar(); yylval.val = escapetochar(yytext + 1, yyleng - 2); return TSTR;}
+"*"                     {countchar(); TOKEN(TMUL); return TMUL;}
+"/"                     {countchar(); TOKEN(TDIV); return TDIV;}
+"%"                     {countchar(); TOKEN(TMOD); return TMOD;}
+"^"                     {countchar(); TOKEN(TXOR); return TXOR;}
+"&&"                    {countchar(); TOKEN(TAND); return TAND;}
+"||"                    {countchar(); TOKEN(TOR); return TOR;}
+">"                     {countchar(); TOKEN(TGT); return TGT;}
+">="                    {countchar(); TOKEN(TGE); return TGE;}
+"<"                     {countchar(); TOKEN(TLT); return TLT;}
+"<="                    {countchar(); TOKEN(TLE); return TLE;}
+"!="                    {countchar(); TOKEN(TNE); return TNE;}
+"!"                     {countchar(); TOKEN(TNOT); return TNOT;}
+"=="                    {countchar(); TOKEN(TEQ); return TEQ;}
+"="                     {countchar(); TOKEN(TASSIGN); return TASSIGN;}
 
+"if"                    {countchar(); TOKEN(TIF); return TIF;}
+"else"                  {countchar(); TOKEN(TELSE); return TELSE;}
+"while"                 {countchar(); TOKEN(TWHILE); return TWHILE;}
+"for"                   {countchar(); TOKEN(TFOR); return TFOR;}
+"do"                    {countchar(); TOKEN(TDO); return TDO;}
+"break"                 {countchar(); TOKEN(TBREAK); return TBREAK;}
+"continue"              {countchar(); TOKEN(TCONTINUE); return TCONTINUE;}
+"switch"                {countchar(); TOKEN(TSWITCH); return TSWITCH;}
+"case"                  {countchar(); TOKEN(TCASE); return TCASE;}
+"default"               {countchar(); TOKEN(TDEFAULT); return TDEFAULT;}
+"return"                {countchar(); TOKEN(TRETURN); return TRETURN;}
+
+"int"                   {countchar(); TOKEN(TINT); return TINT;}
+"char"                  {countchar(); TOKEN(TCHAR); return TCHAR;}
+"double"                {countchar(); TOKEN(TDOUBLE); return TDOUBLE;}
+"float"                 {countchar(); TOKEN(TFLOAT); return TFLOAT;}
+"bool"               {countchar(); TOKEN(TBOOLEAN); return TBOOLEAN;}
+"const"                 {countchar(); TOKEN(TCONST); return TCONST;}
+"void"                  {countchar(); TOKEN(TVOID); return TVOID;}
+"enum"                  {countchar(); TOKEN(TENUM); return TENUM;}
+"string"                {countchar(); TOKEN(TSTRING); return TSTRING;}
+
+"new"                   {countchar(); TOKEN(TNEW); return TNEW;}
+"this"                  {countchar(); TOKEN(TTHIS); return TTHIS;}
+"struct"                {countchar(); TOKEN(TSTRUCT); return TSTRUCT;}
+
+[a-zA-Z_][0-9a-zA-Z_]*  {countchar(); STRING_TOKEN; return TID;}
+
+.                       {countchar(); printf("Unknown token!\n"); yyterminate();}
 %%
 
 
-
-void count(void)
+std::string *escapetochar(char ch[], int length)
 {
-    for(auto ch: std::string(yytext, yyleng)) 
-    {
-        if(ch == '\n')
-        {
-            countchar=0;
-            countline++;
-        }
-        else if(ch=='r')
-        {
-            countchar=0;
-        }
-        else
-        countchar++;
-    }
-}
-
-std::string *escape(char ch[], int length)
-{
-    std::vector<char> cVec;
+    std::vector<char> vecchar;
     int i;
     char prev = '\0';
     for (i = 0; i < length; i++) {
-        if (prev != '\\') {
-            if (ch[i] != '\\') {
-                cVec.push_back(ch[i]);
-            } else {
-                prev = '\\';
-            }
-        } else {
+         if (prev == '\\') {
             switch (ch[i])
             {
-            case 'n': cVec.push_back('\n'); prev = '\0'; break;
-            case 't': cVec.push_back('\t'); prev = '\0'; break;
-            case 'b': cVec.push_back('\b'); prev = '\0'; break;
-            case '\'': cVec.push_back('\''); prev = '\0'; break;
-            case '\"': cVec.push_back('\"'); prev = '\0'; break;
-            case '0': cVec.push_back('\0'); prev = '\0'; break;
-            case '\\': cVec.push_back('\\'); prev = '\0'; break;
+            case 'n': vecchar.push_back('\n'); prev = '\0'; break;
+            case 't': vecchar.push_back('\t'); prev = '\0'; break;
+            case 'b': vecchar.push_back('\b'); prev = '\0'; break;
+            case '\'': vecchar.push_back('\''); prev = '\0'; break;
+            case '\"': vecchar.push_back('\"'); prev = '\0'; break;
+            case '0': vecchar.push_back('\0'); prev = '\0'; break;
+            case '\\': vecchar.push_back('\\'); prev = '\0'; break;
             default: prev = '\0'; break;
             }
         }
+        else {
+            if (ch[i] != '\\') {
+                vecchar.push_back(ch[i]);
+            } else {
+                prev = '\\';
+            }
+        }
     }
-    return new std::string(cVec.begin(), cVec.end());
+    return new std::string(vecchar.begin(), vecchar.end());
+}
+
+void countchar() {
+    currentchar += yyleng;
+    curToken = std::move(yytext);
+}
+
+
+void countline() {
+    currentchar = 0;
+    currentline++;
 }

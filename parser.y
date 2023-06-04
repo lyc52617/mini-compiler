@@ -1,185 +1,229 @@
 %{
-    #include "ast.h"
-    #include <cstdio>
-    #include <cstdlib>
-	#include <iostream>
-	#include <string>
-	#include <vector>
-	#include <memory>
-    extern int yylex();
-	extern int countline;
-	extern int countchar;
-	NBlock *programBlock; // the root
-	void yyerror(const char *s) { std::cout<< "Unexpected error at line" << countline <<" pos "<<countchar<<std::endl; }
-%}
-
-
-%union {
-	ASTnode *node;
-	NBlock *block;
-	NExpression *expression;
-	NStatement *statement;
-	NIdentifier *identifier;
-	NVariableDeclaration* var_decl;
-	VariableList *varvec;
-	ExpressionList *exprvec;
-	Narrayelement *element;
-	std::string *string;
-	int token;
+#include <iostream>
+#include <string>
+#include <vector>
+#include "ast.h"
+extern int currentchar;
+extern int currentline;
+extern std::string curToken;
+extern int yylex();
+void yyerror(const char *s){
+    std::cout << "Token: " << curToken << std::endl
+        << "Error: " << s << " at " << currentline << ":" << currentchar << std::endl;
+    std::exit(1);
 }
 
-%token <string> TIDENTIFIER TINTEGER TDOUBLE TCHAR TSTRING TBOOL TFLOAT TYINT TYDOUBLE TYFLOAT TYCHAR TYBOOL TYVOID TYSTRING TEXTERN TLITERAL
-%token <token> TCEQ TCNE TCLT TCLE TCGT TCGE TEQUAL
-%token <token> TLPAREN TRPAREN TLBRACE TRBRACE TCOMMA TDOT TSEMICOLON TLBRACKET TRBRACKET TQUOTATION
-%token <token> TPLUS TMINUS TMUL TDIV TAND TOR TMOD TNEG TNOT TSHIFTL TSHIFTR
-%token <token> TIF TELSE TFOR TWHILE TRETURN TBREAK TSTRUCT
+NBlock *programBlock;
 
-%type <element> array_index
-%type <identifier> ident primary_typename array_typename struct_typename typename
-%type <expression> literal expr assign muldiv bitop term
-%type <varvec> func_decl_args struct_member
-%type <exprvec> call_args
-%type <block> program stmts block
-%type <statement> stmt var_decl func_decl struct_decl if_stmt for_stmt while_stmt
+%}
 
-%left TPLUS TMINUS TCEQ TCNE TCLT TCLE TCGT TCGE 
-%left TMUL TDIV TMOD TOR TXOR TNEG TNOT
+%union {
+    std::string* val;
+    std::string* type;
+    Node *node;
+    NBlock *block;
+    NExpression *expr;
+	NStructMember* stmb;
+    NStatement *stmt;
+    NIdentifier *id;
+    NVariableDeclaration *varDecl;
+    VariableList *varVec;
+    ExpressionList *expVec;
+    ArrayDimension *arrDim;
+    int32_t token;
+}
 
-%start program
+%token <token> TLSB TRSB TLMB TRMB TLLB TRLB TDOT TCOLON TSEMI
+%token <token> TPLUS TMINUS TMUL TDIV TMOD TXOR TAND TOR TQUOTE TSTRUCT
+%token <token> TGT TGE TLT TLE TNE TEQ TASSIGN TNOT TCOMMA TINC TDEC
+
+%token <token> TIF TELSE TWHILE TFOR TDO TBREAK TCONTINUE
+%token <token> TSWITCH TCASE TDEFAULT 
+%token <token> TINT TCHAR TDOUBLE TFLOAT TBOOLEAN TCONST
+%token <token> TVOID TENUM TSTRING TNEW TTHIS
+%token <token> TRETURN
+%token <val> TID
+
+%token <val> TINTEGER TBOOL TDNUMBER TFNUMBER TCHARACTER TSTR
+
+%type <block> program blockedStmt stmts
+%type <stmt> stmt funcDecl decl struct_decl  ifStmt forStmt nullableStmt
+%type <stmt> whileStmt doWhileStmt 
+%type <id> type id basicType
+%type <expr> exp expr term factor literal call assign 
+%type <varVec> funcdecllist structmember
+%type <expVec> paramList arrayIndices literalList literalArray
+%type <varDecl> idDecl constIdDecl
+%type <arrDim> arrayDimensions
+%type <stmb> struct_member
+
+%left TPLUS TMINUS TMUL TDIV TMOD TXOR TAND TOR TNOT
+%left TGT TGE TLT TLE TNE TEQ
+%right TASSIGN
 
 %%
-program : stmts { programBlock = $1; };
 
-stmts : stmt { $$ = new NBlock(); $$->statements->push_back(shared_ptr<NStatement>($1)); }
-			| stmts stmt { $1->statements->push_back(shared_ptr<NStatement>($2)); }
-			;
-stmt : var_decl TSEMICOLON | func_decl TSEMICOLON| struct_decl TSEMICOLON
-		 | expr TSEMICOLON{ $$ = new NExpressionStatement(shared_ptr<NExpression>($1)); }
-		 | TRETURN expr TSEMICOLON{ $$ = new Nreturn(shared_ptr<NExpression>($2)); }
-		 | if_stmt TSEMICOLON { $$ = $1; }
-		 | for_stmt TSEMICOLON { $$ = $1; }
-		 | while_stmt TSEMICOLON { $$ = $1; }
-		 | TBREAK TSEMICOLON { $$ = new Nbreak(); }
-		 | TSEMICOLON {$$ = nullptr;}
-		 ;
-block : TLBRACE stmts TRBRACE { $$ = $2; }
-			| TLBRACE TRBRACE { $$ = new NBlock(); }
-			;
+program : stmts { programBlock = $1; }
+    ;
 
-var_decl : typename ident { $$ = new NVariableDeclaration(shared_ptr<NIdentifier>($1), shared_ptr<NIdentifier>($2), nullptr); }
-				 | typename ident TEQUAL expr { $$ = new NVariableDeclaration(shared_ptr<NIdentifier>($1), shared_ptr<NIdentifier>($2), shared_ptr<NExpression>($4)); }
-				 | typename ident TEQUAL TLBRACKET call_args TRBRACKET {
-					 $$ = new Narrayinitialize(make_shared<NVariableDeclaration>(shared_ptr<NIdentifier>($1), shared_ptr<NIdentifier>($2), nullptr), shared_ptr<ExpressionList>($5));
-				 }
-				 ;
-func_decl : typename ident TLPAREN func_decl_args TRPAREN block
-				{ $$ = new NFunctionDeclaration(shared_ptr<NIdentifier>($1), shared_ptr<NIdentifier>($2), *$4, shared_ptr<NBlock>($6));  }
-				;
-typename : primary_typename { $$ = $1; }
-			| array_typename { $$ = $1; }
-			| struct_typename { $$ = $1; }
-			;
-primary_typename : TYINT { $$ = new NIdentifier(*$1,"int");delete $1; }
-					| TYDOUBLE { $$ = new NIdentifier(*$1,"double"); $$->type = true; delete $1; }
-					| TYFLOAT { $$ = new NIdentifier(*$1,"float"); $$->type = true; delete $1; }
-					| TYCHAR { $$ = new NIdentifier(*$1,"char"); $$->type = true; delete $1; }
-					| TYBOOL { $$ = new NIdentifier(*$1,"bool"); $$->type = true; delete $1; }
-					| TYVOID { $$ = new NIdentifier(*$1,"void"); $$->type = true; delete $1; }
-					| TYSTRING { $$ = new NIdentifier(*$1,"string"); $$->type = true; delete $1; }
-					;
-array_typename : primary_typename TLBRACKET TINTEGER TRBRACKET { 
-					$1->isarray = true; 
-					$1->arraySize->push_back(make_shared<NInteger>(atol($3->c_str()))); 
-					$$ = $1; 
-				}
-				| array_typename TLBRACKET TINTEGER TRBRACKET {
-					$1->arraySize->push_back(make_shared<NInteger>(atol($3->c_str())));
-					$$ = $1;
-				}
+stmts : stmts stmt { $1->statements.push_back($2); }
+    | stmt { $$ = new NBlock(); $$->statements.push_back($1); }
+    ;
 
+stmt : decl TSEMI { $$ = $1; }
+	| TSEMI { $$ = new NNullstatement();}
+    | ifStmt { $$ = $1; }
+    | forStmt { $$ = $1; }
+    | whileStmt { $$ = $1; }
+    | doWhileStmt TSEMI{ $$ = $1; }
+    | assign TSEMI { $$ = new NExpressionStatement($1); }
+    | exp TSEMI { $$ = new NExpressionStatement($1); }
+    | TBREAK TSEMI { $$ = new NBreakStatement(); }
+    | TCONTINUE TSEMI { $$ = new NContinueStatement(); }
+    ;
 
-func_decl_args : /* blank */ { $$ = new VariableList(); }
-							 | var_decl { $$ = new VariableList(); $$->push_back(shared_ptr<NVariableDeclaration>($<var_decl>1)); }
-							 | func_decl_args TCOMMA var_decl { $1->push_back(shared_ptr<NVariableDeclaration>($<var_decl>3)); }
-							 ;
-ident : TIDENTIFIER { $$ = new NIdentifier(*$1); delete $1; }
-expr : 	assign { $$ = $1; }
-		| TLPAREN expr TRPAREN { $$ = $2; }
-		 | ident TLPAREN call_args TRPAREN { $$ = new NFunctionCall(shared_ptr<NIdentifier>($1), shared_ptr<ExpressionList>($3)); }
-		 | ident { $<identifier>$ = $1; }
-		 | ident TDOT ident { $$ = new NStructmember(shared_ptr<NIdentifier>($1), shared_ptr<NIdentifier>($3)); }
-		 | expr TAND expr { $$ = new NBinaryOperator(shared_ptr<NExpression>($1), $2, shared_ptr<NExpression>($3)); }
-		 | expr TOR expr { $$ = new NBinaryOperator(shared_ptr<NExpression>($1), $2, shared_ptr<NExpression>($3)); }
-		 | literal
-		 | term
-		 | TMINUS expr { $$ = nullptr;}
-		 | array_index { $$ = $1; }
-		;
-muldiv:		expr TMOD expr { $$ = new NBinaryOperator(shared_ptr<NExpression>($1), $2, shared_ptr<NExpression>($3)); }
-		 | expr TMUL expr { $$ = new NBinaryOperator(shared_ptr<NExpression>($1), $2, shared_ptr<NExpression>($3)); }
-		 | expr TDIV expr { $$ = new NBinaryOperator(shared_ptr<NExpression>($1), $2, shared_ptr<NExpression>($3)); }
-		 ;
-array_index : ident TLBRACKET expr TRBRACKET 
-				{ $$ = new Narrayelement(shared_ptr<NIdentifier>($1), shared_ptr<NExpression>($3)); }
-				| array_index TLBRACKET expr TRBRACKET 
-					{ 	
-						$1->expressions->push_back(shared_ptr<NExpression>($3));
-						$$ = $1;
-					};
-literal: TINTEGER { $$ = new NInteger(atol($1->c_str())); }
-			| TDOUBLE { $$ = new NDouble(atof($1->c_str())); }
-			| TFLOAT { $$ = new NFloat(atof($1->c_str())); }
-			| TBOOL { $$ = new NBool(*$1); }
-			| TCHAR { $$ = new NChar(*$1); }
-			| TSTRING { $$ = new NString(*$1); }
+whileStmt : TWHILE TLSB exp TRSB blockedStmt { $$ = new NWhileStatement($3, $5); }
+    ;
 
-assign : 	 ident TEQUAL expr { $$ = new NAssignment(shared_ptr<NIdentifier>($1), shared_ptr<NExpression>($3)); }
-			| array_index TEQUAL expr {
-				$$ = new Narrayelementassign(shared_ptr<Narrayelement>($1), shared_ptr<NExpression>($3));
-			}
-			| ident TDOT ident TEQUAL expr {
-				auto member = make_shared<NStructmember>(shared_ptr<NIdentifier>($1), shared_ptr<NIdentifier>($3)); 
-				$$ = new Nstructassign(member, shared_ptr<NExpression>($5)); 
-			}
-			;
-call_args : /* blank */ { $$ = new ExpressionList(); }
-					| expr { $$ = new ExpressionList(); $$->push_back(shared_ptr<NExpression>($1)); }
-					| call_args TCOMMA expr { $1->push_back(shared_ptr<NExpression>($3)); }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-					;
-				 
-bitop: 	expr TPLUS expr { $$ = new NBinaryOperator(shared_ptr<NExpression>($1), $2, shared_ptr<NExpression>($3)); }
-		 | expr TMINUS expr { $$ = new NBinaryOperator(shared_ptr<NExpression>($1), $2, shared_ptr<NExpression>($3)); }
-		 | muldiv
-		 ;
-term:	expr TCNE expr { $$ = new NBinaryOperator(shared_ptr<NExpression>($1), $2, shared_ptr<NExpression>($3)); }
-		 | expr TCEQ expr { $$ = new NBinaryOperator(shared_ptr<NExpression>($1), $2, shared_ptr<NExpression>($3)); }
-		 | expr TCGE expr { $$ = new NBinaryOperator(shared_ptr<NExpression>($1), $2, shared_ptr<NExpression>($3)); }
-		 | expr TCLE expr { $$ = new NBinaryOperator(shared_ptr<NExpression>($1), $2, shared_ptr<NExpression>($3)); }
-		 | expr TCLT expr { $$ = new NBinaryOperator(shared_ptr<NExpression>($1), $2, shared_ptr<NExpression>($3)); }
-		 | expr TCGT expr { $$ = new NBinaryOperator(shared_ptr<NExpression>($1), $2, shared_ptr<NExpression>($3)); }
-		 | bitop
-if_stmt: TIF TLPAREN expr TRPAREN block{ $$ = new Nifelse(shared_ptr<NExpression>($3), shared_ptr<NBlock>($5));}
-		| TIF TLPAREN expr TRPAREN block TELSE block {$$ = new Nifelse(shared_ptr<NExpression>($3), shared_ptr<NBlock>($5),shared_ptr<NBlock>($7));}
-		| TIF TLPAREN expr TRPAREN block TELSE if_stmt
-		{auto ifelse = new NBlock();ifelse->statements->push_back(shared_ptr<NStatement>($7));$$ = new Nifelse(shared_ptr<NExpression>($3), shared_ptr<NBlock>($5),shared_ptr<NBlock>(ifelse));};
+doWhileStmt : TDO blockedStmt TWHILE TLSB exp TRSB { $$ = new NDoWhileStatement($5, $2); }
+    ;
 
-while_stmt: TWHILE TLPAREN expr TRPAREN block{
-		$$ = new Nwhile(shared_ptr<NBlock>($5),shared_ptr<NExpression>($3));};
-		
+nullableStmt : decl { $$ = $1; }
+    | assign { $$ = new NExpressionStatement($1); }
+    | exp { $$ = new NExpressionStatement($1); }
+    | { $$ = nullptr; }
+    ;
 
-for_stmt:TFOR TLPAREN expr TSEMICOLON expr TSEMICOLON expr TRPAREN block { $$ = new Nforloop( shared_ptr<NExpression>($3), shared_ptr<NExpression>($5), shared_ptr<NExpression>($7),shared_ptr<NBlock>($9)); }
+ifStmt : TIF TLSB exp TRSB blockedStmt { $$ = new NIfStatement($3, $5); }
+    | TIF TLSB exp TRSB blockedStmt TELSE blockedStmt { $$ = new NIfStatement($3, $5, $7); }
+    | TIF TLSB exp TRSB blockedStmt TELSE ifStmt { 
+        auto elseBlock = new NBlock();
+        elseBlock->statements.push_back($7);
+        $$ = new NIfStatement($3, $5, elseBlock);
+    }
+    ;
 
-struct_typename: TSTRUCT ident {
-				$2->type = "struct";
-				$$ = $2;
-			}
-struct_decl : TSTRUCT ident TLBRACE struct_member TRBRACE {$$ = new Nstructdeclaration(shared_ptr<NIdentifier>($2), *$4); }
+forStmt : TFOR TLSB nullableStmt TSEMI exp TSEMI nullableStmt TRSB blockedStmt { $$ = new NForStatement($3, $5, $7, $9); }
+blockedStmt : TLLB stmts TRLB { $$ = $2; }
+    | TLLB TRLB { $$ = new NBlock(); }
+    ;
 
-struct_member : { $$ = new VariableList(); }
-				| var_decl { $$ = new VariableList(); $$->push_back(shared_ptr<NVariableDeclaration>($<var_decl>1)); }
-				| struct_member var_decl { $1->push_back(shared_ptr<NVariableDeclaration>($<var_decl>2)); }
-				;
+decl : idDecl { $$ = $1; }
+    | constIdDecl { $$ = $1; }
+    | funcDecl { $$ = $1; }
+	| struct_decl {$$ = $1;}
+    | TRETURN exp { $$ = new NReturnStatement($2); }
+    | TRETURN { $$ = new NReturnStatement(); }
+    ;
+
+idDecl : type id { $$ = new NVariableDeclaration(false, *$1, *$2); }
+    | type id TASSIGN exp { $$ = new NVariableDeclaration(false, *$1, *$2, $4); }
+    | type id arrayDimensions { $$ = new NVariableDeclaration(false, true,$3,*$1, *$2); }
+    | type id arrayDimensions TASSIGN exp { $$ = new NVariableDeclaration(false, true,$3,*$1, *$2, $5); }
+    ;
+
+literalArray : TLLB literalList TRLB { $$ = $2; }
+    ;
+literalList : literalList TCOMMA literal { $$->push_back($3); }
+    | literal { $$ = new ExpressionList(); $$->push_back($1); }
+    ;
+ 
+constIdDecl : TCONST type id { $$ = new NVariableDeclaration(true, *$2, *$3); }
+    | TCONST type id TASSIGN exp { $$ = new NVariableDeclaration(true, *$2, *$3, $5); }
+    ;
+
+funcDecl : type id TLSB funcdecllist TRSB blockedStmt {
+    $$ = new NFunctionDeclaration(*$1, *$2, *$4, *$6); }
+    ;
+struct_decl : TSTRUCT id TLLB structmember TRLB
+{
+	$$ = new NStructdec(*$2,*$4);
+}	;
+structmember : idDecl TSEMI{$$ = new VariableList(); $$->push_back($1); }
+	| constIdDecl TSEMI{ $$ = new VariableList(); $$->push_back($1);}
+	| structmember idDecl TSEMI{$1->push_back($2);}
+	| structmember constIdDecl TSEMI{$1->push_back($2); }
+	;
+funcdecllist : idDecl { $$ = new VariableList(); $$->push_back($1); }
+    | constIdDecl { $$ = new VariableList(); $$->push_back($1); }
+    | funcdecllist TCOMMA constIdDecl { $1->push_back($3); }
+    | funcdecllist TCOMMA idDecl { $1->push_back($3); }
+    | { $$ = new VariableList(); }
+    ;
+
+exp : expr
+    | exp TGE expr { $$ = new NBinaryOperator($1, $2, $3); }
+    | exp TGT expr { $$ = new NBinaryOperator($1, $2, $3); }
+    | exp TLE expr { $$ = new NBinaryOperator($1, $2, $3); }
+    | exp TLT expr { $$ = new NBinaryOperator($1, $2, $3); }
+    | exp TNE expr { $$ = new NBinaryOperator($1, $2, $3); }
+    | exp TEQ expr { $$ = new NBinaryOperator($1, $2, $3); }
+    ;
+expr : expr TPLUS term { $$ = new NBinaryOperator($1, $2, $3); }
+    | expr TMINUS term { $$ = new NBinaryOperator($1, $2, $3); }
+    | expr TOR term { $$ = new NBinaryOperator($1, $2, $3); }
+    | term { $$ = $1; }
+    ;
+term : term TMUL factor { $$ = new NBinaryOperator($1, $2, $3); }
+    | term TDIV factor { $$ = new NBinaryOperator($1, $2, $3); }
+    | term TAND factor { $$ = new NBinaryOperator($1, $2, $3); }
+    | term TMOD factor { $$ = new NBinaryOperator($1, $2, $3); }
+    | term TXOR factor { $$ = new NBinaryOperator($1, $2, $3); }
+    | factor { $$ = $1; }
+    ;
+factor : literal { $$ = $1; }
+    | id { $$ = $1; }
+    | call { $$ = $1; }
+    | TLSB exp TRSB { $$ = $2; }
+    | TNOT factor { $$ = new NUnaryOperator($1, $2); }
+    | TMINUS factor { $$ = new NUnaryOperator($1, $2); }
+    | TINC id { $$ = new NIncOperator($1, $2, true); }
+    | TDEC id { $$ = new NDecOperator($1, $2, true); }
+    | id TINC { $$ = new NIncOperator($2, $1, false); }
+    | id TDEC { $$ = new NDecOperator($2, $1, false); }
+    | struct_member {$$ = $1;}
+    | id arrayIndices { $$ = new NArrayElement(*$1, *$2); }
+    | type literalArray arrayDimensions { $$ = new NArray($1, $3, $2); }
+    | TNEW type arrayDimensions { $$ = new NArray($2, $3); }
+    ;
+struct_member : id TDOT id {$$ = new NStructMember(*$1,*$3); }
+arrayDimensions : arrayDimensions TLMB TINTEGER TRMB { $$->push_back($3); }
+    | TLMB TINTEGER TRMB { $$ = new ArrayDimension(); $$->push_back($2); }
+    ;
+arrayIndices : arrayIndices TLMB exp TRMB { $1->push_back($3); }
+    | TLMB exp TRMB { $$ = new ExpressionList(); $$->push_back($2); }
+    ;
+call : id TLSB TRSB { $$ = new NFunctionCall(*$1, *(new ExpressionList())); }
+    | id TLSB paramList TRSB { $$ = new NFunctionCall(*$1, *$3); }
+    ;
+assign : id TASSIGN exp { $$ = new NAssignment(*$1, *$3); }
+    | id arrayIndices TASSIGN exp { $$ = new NArrayAssignment(*$1, *$2, *$4); }
+	| struct_member TASSIGN exp{$$ = new NStructAssignment(*$1,$3);}
+    ;
+paramList : exp { $$ = new ExpressionList(); $$->push_back($1); }
+    | paramList TCOMMA exp { $$->push_back($3); }
+    ;
+literal : TINTEGER { $$ = new NInteger(*$1); }
+    | TBOOL { $$ = new NBoolean(*$1); }
+    | TSTR { $$ = new NString(*$1); }
+    | TDNUMBER { $$ = new NDouble(*$1); }
+    | TFNUMBER { $$ = new NFloat(*$1); }
+    | TCHARACTER { $$ = new NChar(*$1); }
+    ;
+
+type : id { $$ = $1; }
+    | basicType { $$ = $1; }
+	| TSTRUCT id {$$ = $2;}
+    ;
+
+basicType : TINT { $$ = new NIdentifier("int"); }
+    | TCHAR { $$ = new NIdentifier("char"); }
+    | TDOUBLE { $$ = new NIdentifier("double"); }
+    | TFLOAT { $$ = new NIdentifier("float"); }
+    | TBOOLEAN { $$ = new NIdentifier("boolean"); }
+    | TVOID { $$ = new NIdentifier("void"); }
+    | TSTRING { $$ = new NIdentifier("string"); }
+    ;
+
+id : TID { $$ = new NIdentifier(*$1); };
 %%
-
-
-
